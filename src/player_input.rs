@@ -1,10 +1,11 @@
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_prototype_lyon::prelude::*;
+
 
 use crate::{
     board::{Board, Cell},
     game_over::{TryAgainButton, TRY_AGAIN_TEXT_SIZE},
-    visuals::{place_symbol_single, update_grid_cover, GridCover, ScaleFactor},
+    scale::ScaleFactor,
+    visuals::{place_symbol_single, update_grid_cover, GridCover},
     CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS,
 };
 
@@ -15,7 +16,7 @@ pub fn click(
     q_board: Query<&mut Board>,
     q_scale_factor: Query<&ScaleFactor>,
     q_grid_covers: Query<(&mut Sprite, &GridCover)>,
-    q_try_again_button: Query<(&mut TryAgainButton)>,
+    q_try_again_button: Query<&mut TryAgainButton>,
 ) {
     if q_board.single().game_active() {
         place_symbol_on_click(
@@ -35,17 +36,17 @@ fn game_over_menu_buttons(
     buttons: Res<Input<MouseButton>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
     q_scale_factor: Query<&ScaleFactor>,
-    mut q_try_again_button: Query<(&mut TryAgainButton)>,
+    q_try_again_button: Query<&mut TryAgainButton>,
 ) {
     if let Ok(window) = q_windows.get_single() {
         if let Some(position) = window.physical_cursor_position() {
             let scale_factor = q_scale_factor.single();
-            let scale_fac = scale_factor.scale;
+            let scale_fac = scale_factor.0;
 
             let position = position
                 - Vec2::new(
-                    scale_factor.screen_width / 2.0,
-                    scale_factor.screen_height / 2.0,
+                    window.physical_width() as f32 / 2.0,
+                    window.physical_height() as f32 / 2.0,
                 );
 
             let x_bounding = TRY_AGAIN_TEXT_SIZE * 2.5 * scale_fac;
@@ -86,12 +87,12 @@ fn place_symbol_on_click(
         if let Ok(window) = q_windows.get_single() {
             if let Some(position) = window.physical_cursor_position() {
                 let scale_factor = q_scale_factor.single();
-                let scale_fac = scale_factor.scale;
+                let scale_fac = scale_factor.0;
 
                 let position = position
                     - Vec2 {
-                        x: scale_factor.screen_width / 2.0,
-                        y: scale_factor.screen_height / 2.0,
+                        x: window.physical_width() as f32 / 2.0,
+                        y: window.physical_width() as f32 / 2.0,
                     };
                 let x = (position.x
                     / ((CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac)
@@ -115,7 +116,7 @@ fn place_symbol_on_click(
                 if q_board.single().game_active() {
                     let mut board = q_board.single_mut();
                     if board.place_symbol(x, y, &cell) {
-                        place_symbol_single(&mut commands, x, y, scale_fac, &cell);
+                        place_symbol_single(&mut commands, x, y, &cell);
                         update_grid_cover(&board, q_grid_covers);
                     }
                 }

@@ -2,13 +2,15 @@ pub mod board;
 mod game_over;
 pub mod generate_shapes;
 pub mod player_input;
+mod scale;
 pub mod visuals;
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use player_input::click;
-use visuals::{resize_notificator, ScaleFactor};
+use scale::{resize, ScaleFactor};
+use visuals::create_board;
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -32,13 +34,19 @@ fn main() {
         .add_plugin(ShapePlugin)
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
         .add_startup_system(setup)
-        .add_system(resize_notificator)
+        //.add_startup_system(create_board)
+        .add_system(resize)
+        //.add_system(resize_notificator)
         .add_system(click)
         .run()
 }
 
-fn setup(mut commands: Commands) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(ScaleFactor::default());
     commands.spawn(Board::default());
+
+    let scale_factor = ScaleFactor::default();
+
+    create_board(&mut commands, &asset_server);
+    commands.spawn(scale_factor);
 }

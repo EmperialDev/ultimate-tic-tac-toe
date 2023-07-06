@@ -57,10 +57,8 @@ impl Board {
             for i in 0..9 {
                 if i == index_in_grid {
                     self.grid_state[i] = GridState::Active;
-                } else {
-                    if self.grid_state[i] == GridState::Active {
-                        self.grid_state[i] = GridState::Inactive;
-                    }
+                } else if self.grid_state[i] == GridState::Active {
+                    self.grid_state[i] = GridState::Inactive;
                 }
             }
         }
@@ -176,9 +174,9 @@ pub enum GridState {
     WonByNought,
 }
 
-impl Into<Cell> for GridState {
-    fn into(self) -> Cell {
-        match self {
+impl From<GridState> for Cell {
+    fn from(val: GridState) -> Self {
+        match val {
             GridState::Active | GridState::Inactive => Cell::Empty,
             GridState::WonByCross => Cell::Cross,
             GridState::WonByNought => Cell::Nought,
