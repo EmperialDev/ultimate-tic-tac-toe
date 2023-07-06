@@ -114,7 +114,7 @@ fn create_board(commands: &mut Commands, asset_server: &Res<AssetServer>, scale_
 
     // Text
     let text_style = TextStyle {
-        font: asset_server.load("fonts/BAHNSCHRIFT.ttf"),
+        font: asset_server.load("fonts/Poppins-SemiBold.ttf"),
         font_size: TEXT_SIZE * scale_fac,
         color: Color::rgb(0.1, 0.1, 0.1),
     };

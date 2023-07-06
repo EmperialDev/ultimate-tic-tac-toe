@@ -80,7 +80,7 @@ pub fn game_over_text(
 
     // Text
     let text_style = TextStyle {
-        font: asset_server.load("fonts/BAHNSCHRIFT.ttf"),
+        font: asset_server.load("fonts/Poppins-Medium.ttf"),
         font_size: WHO_WON_TEXT_SIZE * scale_fac,
         color,
     };
@@ -99,7 +99,7 @@ pub fn game_over_text(
 
     // Text
     let text_style = TextStyle {
-        font: asset_server.load("fonts/BAHNSCHRIFT.ttf"),
+        font: asset_server.load("fonts/Poppins-Light.ttf"),
         font_size: TRY_AGAIN_TEXT_SIZE * scale_fac,
         color: Color::rgb(0.25, 0.25, 0.25),
     };
