@@ -57,10 +57,8 @@ impl Board {
             for i in 0..9 {
                 if i == index_in_grid {
                     self.grid_state[i] = GridState::Active;
-                } else {
-                    if self.grid_state[i] == GridState::Active {
-                        self.grid_state[i] = GridState::Inactive;
-                    }
+                } else if self.grid_state[i] == GridState::Active {
+                    self.grid_state[i] = GridState::Inactive;
                 }
             }
         }
@@ -71,6 +69,15 @@ impl Board {
         };
 
         true
+    }
+
+    /// Resets the board
+    pub fn reset(&mut self) {
+        self.grid = [[Cell::default(); 9]; 9];
+        self.grid_state = [GridState::default(); 9];
+        self.player_turn = CrossOrNought::Cross;
+        self.last_grid = None;
+        self.game_active = true;
     }
 
     /// Returns if the game is over
@@ -152,7 +159,7 @@ impl Board {
     }
 }
 
-#[derive(Default, PartialEq, Eq, Clone, Debug)]
+#[derive(Default, PartialEq, Eq, Clone, Copy, Debug)]
 pub enum Cell {
     #[default]
     Empty,
@@ -176,9 +183,9 @@ pub enum GridState {
     WonByNought,
 }
 
-impl Into<Cell> for GridState {
-    fn into(self) -> Cell {
-        match self {
+impl From<GridState> for Cell {
+    fn from(val: GridState) -> Self {
+        match val {
             GridState::Active | GridState::Inactive => Cell::Empty,
             GridState::WonByCross => Cell::Cross,
             GridState::WonByNought => Cell::Nought,
@@ -186,6 +193,7 @@ impl Into<Cell> for GridState {
     }
 }
 
+#[allow(unused)]
 fn debug_print_cell_array(grid: &[Cell; 9]) {
     println!("-----");
     print!("[");
