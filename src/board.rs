@@ -29,7 +29,7 @@ impl Board {
             return false;
         }
 
-        self.grid[grid_index][index_in_grid] = cell.clone();
+        self.grid[grid_index][index_in_grid] = *cell;
 
         if let Some(last_grid) = self.last_grid {
             if let Some(won_by) = Self::check_if_won(&self.grid[last_grid]) {
