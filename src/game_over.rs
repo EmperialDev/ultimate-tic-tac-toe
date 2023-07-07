@@ -3,7 +3,7 @@ use bevy_prototype_lyon::{prelude::*, shapes};
 
 use crate::{
     board::CrossOrNought,
-    scale::{BetterScale, TextScale},
+    scale::{Scale, TextScale},
     CROSS_COLOR, NOUGHT_COLOR,
 };
 
@@ -37,7 +37,7 @@ pub fn game_over_text(
             ..Default::default()
         },
         Fill::color(Color::rgba(0.95, 0.95, 0.95, 0.6)),
-        BetterScale::from_location(Vec3::new(0.0, WHO_WON_TEXT_SIZE, 15.0)),
+        Scale,
     ));
 
     let shape = shapes::RoundedPolygon {
@@ -60,7 +60,7 @@ pub fn game_over_text(
             ..Default::default()
         },
         Fill::color(Color::rgba(0.95, 0.95, 0.95, 0.6)),
-        BetterScale::from_location(Vec3::new(0.0, -TRY_AGAIN_TEXT_SIZE, 15.0)),
+        Scale,
         TryAgainButton::default(),
     ));
 
@@ -85,7 +85,7 @@ pub fn game_over_text(
             text: Text::from_section(text, text_style),
             ..Default::default()
         },
-        TextScale::new(Vec3::new(0.0, WHO_WON_TEXT_SIZE, 20.0), WHO_WON_TEXT_SIZE),
+        TextScale,
     ));
 
     // Text
@@ -100,10 +100,7 @@ pub fn game_over_text(
             text: Text::from_section("Try again", text_style),
             ..Default::default()
         },
-        TextScale::new(
-            Vec3::new(0.0, -TRY_AGAIN_TEXT_SIZE, 20.0),
-            TRY_AGAIN_TEXT_SIZE,
-        ),
+        TextScale,
     ));
 }
 

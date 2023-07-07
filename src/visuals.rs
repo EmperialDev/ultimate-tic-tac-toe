@@ -4,7 +4,7 @@ use bevy_prototype_lyon::prelude::*;
 use crate::{
     board::{Cell, GridState},
     generate_shapes::{generate_cross_path, generate_nought_path},
-    scale::{BetterScale, TextScale},
+    scale::{Scale, TextScale},
     Board, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
     GRID_LINE_THICKNESS, NOUGHT_COLOR, TEXT_SIZE,
 };
@@ -50,7 +50,7 @@ pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
                     },
                     ..default()
                 },
-                BetterScale::new(translation, scale),
+                Scale,
             ));
         }
     }
@@ -77,7 +77,7 @@ pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
             },
             ..default()
         },
-        TextScale::new(translation, TEXT_SIZE),
+        TextScale,
     ));
 
     // Creats the cells?
@@ -149,7 +149,7 @@ pub fn create_grid_cover(mut commands: Commands) {
                     },
                     ..Default::default()
                 },
-                BetterScale::new(translation, scale),
+                Scale,
                 GridCover((x + 1) as u8 + (y + 1) as u8 * 3),
             ));
         }
@@ -187,7 +187,7 @@ pub fn place_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cel
         } else {
             NOUGHT_COLOR
         }),
-        BetterScale::from_location(translation),
+        Scale,
     ));
 }
 
