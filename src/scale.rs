@@ -3,6 +3,7 @@ use bevy::{prelude::*, window::WindowResized};
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TEXT_SIZE};
 
 pub fn resize(
+    mut last_scale_fac: Local<Option<f32>>,
     mut resize_event: EventReader<WindowResized>,
     mut q_scale_factor: Query<&mut ScaleFactor>,
     mut q_better_scale: Query<(&mut Transform, &BetterScale), Without<TextScale>>,
@@ -21,14 +22,24 @@ pub fn resize(
 
         q_scale_factor.single_mut().0 = scale_fac;
 
+        let scale_fac_diffrens = if let Some(last_scale_fac) = *last_scale_fac {
+            scale_fac / last_scale_fac
+            
+        } else {
+            scale_fac
+        };
+        
+        *last_scale_fac = Some(scale_fac);
+        println!("{}", scale_fac_diffrens);
+
         for (mut transform, scale) in &mut q_better_scale {
-            transform.translation = scale.translation * scale_fac;
-            transform.scale = scale.scale * scale_fac;
+            transform.translation *= scale_fac_diffrens;
+            transform.scale *= scale_fac_diffrens;
         }
 
         for (mut transform, mut text, scale) in &mut q_text_scale {
-            transform.translation = scale.translation * scale_fac;
-            text.sections[0].style.font_size = scale.text_size * scale_fac;
+            transform.translation *= scale_fac_diffrens;
+            text.sections[0].style.font_size *= scale_fac_diffrens;
         }
     }
 }

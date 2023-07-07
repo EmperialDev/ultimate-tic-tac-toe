@@ -43,6 +43,11 @@ pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
                         },
                         ..default()
                     },
+                    transform: Transform {
+                        translation,
+                        scale,
+                        ..Default::default()
+                    },
                     ..default()
                 },
                 BetterScale::new(translation, scale),
@@ -66,6 +71,10 @@ pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Text2dBundle {
             text: Text::from_section("Welcome to Ultimate Tic Tac Toe", text_style),
+            transform: Transform {
+                translation,
+                ..Default::default()
+            },
             ..default()
         },
         TextScale::new(translation, TEXT_SIZE),
@@ -131,6 +140,11 @@ pub fn create_grid_cover(mut commands: Commands) {
                 SpriteBundle {
                     sprite: Sprite {
                         color: Color::NONE,
+                        ..Default::default()
+                    },
+                    transform: Transform {
+                        translation,
+                        scale,
                         ..Default::default()
                     },
                     ..Default::default()
