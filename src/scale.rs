@@ -39,6 +39,7 @@ pub struct BetterScale {
     pub scale: Vec3,
 }
 
+#[allow(unused)]
 impl BetterScale {
     /// Creates a new `BetterScale` from the `translation` and `scale`
     pub fn new(translation: Vec3, scale: Vec3) -> Self {

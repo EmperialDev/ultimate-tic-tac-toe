@@ -1,16 +1,19 @@
 pub mod board;
-mod game_over;
+pub mod game_over;
 pub mod generate_shapes;
 pub mod player_input;
-mod scale;
+pub mod scale;
 pub mod visuals;
+pub mod start_screen;
+mod main_menu;
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use player_input::click;
 use scale::{resize, ScaleFactor};
-use visuals::create_board;
+use start_screen::{create_start_screen, button_system};
+use visuals::{create_board, create_grid_cover};
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -32,21 +35,31 @@ fn main() {
         .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
+        .add_state::<AppState>()
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
         .add_startup_system(setup)
-        //.add_startup_system(create_board)
+        .add_startup_system(create_board)
+        .add_startup_system(create_grid_cover)
+        .add_startup_system(create_start_screen)
         .add_system(resize)
-        //.add_system(resize_notificator)
+        .add_system(button_system)
         .add_system(click)
         .run()
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
     commands.spawn(Board::default());
 
     let scale_factor = ScaleFactor::default();
 
-    create_board(&mut commands, &asset_server);
     commands.spawn(scale_factor);
+}
+
+#[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+pub enum AppState {
+    #[default]
+    MainMenu,
+    Game,
+    GaneOver,
 }

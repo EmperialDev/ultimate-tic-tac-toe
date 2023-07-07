@@ -71,6 +71,15 @@ impl Board {
         true
     }
 
+    /// Resets the board
+    pub fn reset(&mut self) {
+        self.grid = [[Cell::default(); 9]; 9];
+        self.grid_state = [GridState::default(); 9];
+        self.player_turn = CrossOrNought::Cross;
+        self.last_grid = None;
+        self.game_active = true;
+    }
+
     /// Returns if the game is over
     pub fn game_active(&self) -> bool {
         self.game_active
@@ -150,7 +159,7 @@ impl Board {
     }
 }
 
-#[derive(Default, PartialEq, Eq, Clone, Debug)]
+#[derive(Default, PartialEq, Eq, Clone, Copy, Debug)]
 pub enum Cell {
     #[default]
     Empty,
@@ -184,6 +193,7 @@ impl From<GridState> for Cell {
     }
 }
 
+#[allow(unused)]
 fn debug_print_cell_array(grid: &[Cell; 9]) {
     println!("-----");
     print!("[");

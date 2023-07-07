@@ -11,7 +11,7 @@ use crate::{
 
 const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.15);
 
-pub fn create_board(commands: &mut Commands, asset_server: &Res<AssetServer>) {
+pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Grid lines
     for x in 0..2 {
         for y in -4..4 {
@@ -107,7 +107,7 @@ pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &
     }
 }
 
-fn create_grid_cover(commands: &mut Commands, board: &Board) {
+pub fn create_grid_cover(mut commands: Commands) {
     // Invisible grid covers
     for x in -1i32..2i32 {
         for y in -1i32..2i32 {
@@ -130,12 +130,7 @@ fn create_grid_cover(commands: &mut Commands, board: &Board) {
             commands.spawn((
                 SpriteBundle {
                     sprite: Sprite {
-                        color: match board.state_for_grid((x + 1 + (y + 1) * 3) as usize) {
-                            GridState::Active => Color::rgba(0.0, 0.0, 0.0, 0.0),
-                            GridState::Inactive => GRID_COVER_COLOR,
-                            GridState::WonByCross => CROSS_COLOR.with_a(0.15),
-                            GridState::WonByNought => NOUGHT_COLOR.with_a(0.2),
-                        },
+                        color: Color::NONE,
                         ..Default::default()
                     },
                     ..Default::default()
@@ -147,20 +142,7 @@ fn create_grid_cover(commands: &mut Commands, board: &Board) {
     }
 }
 
-fn place_symbols(commands: &mut Commands, board: &Board) {
-    for (x, grid) in board.grid().iter().enumerate() {
-        for (y, cell) in grid.iter().enumerate() {
-            if cell != &Cell::Empty {
-                let x_grid = ((x % 3) * 3 + y % 3) as f32;
-                let y_grid = (x as f32 / 3.0).floor() * 3.0 + (y as f32 / 3.0).floor();
-
-                place_symbol_single(commands, x_grid - 4.0, y_grid - 4.0, cell);
-            }
-        }
-    }
-}
-
-pub fn place_symbol_single(commands: &mut Commands, x: f32, y: f32, cell: &Cell) {
+pub fn place_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cell: &Cell) {
     if cell == &Cell::Empty {
         error!("Tried to spawn an empty symbol!");
         return;
@@ -178,6 +160,11 @@ pub fn place_symbol_single(commands: &mut Commands, x: f32, y: f32, cell: &Cell)
                 generate_cross_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
             } else {
                 generate_nought_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+            },
+            transform: Transform {
+                translation: translation * scale_fac,
+                scale: Vec3::splat(scale_fac),
+                ..Default::default()
             },
             ..Default::default()
         },

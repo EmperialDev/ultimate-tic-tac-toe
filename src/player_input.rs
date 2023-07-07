@@ -1,11 +1,12 @@
 use bevy::{prelude::*, window::PrimaryWindow};
+use bevy_prototype_lyon::prelude::*;
 
 
 use crate::{
     board::{Board, Cell},
     game_over::{TryAgainButton, TRY_AGAIN_TEXT_SIZE},
     scale::ScaleFactor,
-    visuals::{place_symbol_single, update_grid_cover, GridCover},
+    visuals::{place_symbol, update_grid_cover, GridCover},
     CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS,
 };
 
@@ -16,7 +17,7 @@ pub fn click(
     q_board: Query<&mut Board>,
     q_scale_factor: Query<&ScaleFactor>,
     q_grid_covers: Query<(&mut Sprite, &GridCover)>,
-    q_try_again_button: Query<&mut TryAgainButton>,
+    q_try_again_button: Query<(&mut Fill, &mut TryAgainButton)>,
 ) {
     if q_board.single().game_active() {
         place_symbol_on_click(
@@ -28,7 +29,7 @@ pub fn click(
             q_grid_covers,
         )
     } else {
-        game_over_menu_buttons(buttons, q_windows, q_scale_factor, q_try_again_button)
+        //game_over_menu_buttons(buttons, q_windows, q_scale_factor, q_try_again_button, q_board)
     }
 }
 
@@ -36,7 +37,8 @@ fn game_over_menu_buttons(
     buttons: Res<Input<MouseButton>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
     q_scale_factor: Query<&ScaleFactor>,
-    q_try_again_button: Query<&mut TryAgainButton>,
+    mut q_try_again_button: Query<(&mut Fill, &mut TryAgainButton)>,
+    mut q_board: Query<&mut Board>,
 ) {
     if let Ok(window) = q_windows.get_single() {
         if let Some(position) = window.physical_cursor_position() {
@@ -57,19 +59,23 @@ fn game_over_menu_buttons(
                     ..y_bounding - TRY_AGAIN_TEXT_SIZE * scale_fac)
                     .contains(&position.y)
             {
-                println!("{}", q_try_again_button.iter().len());
-                /*
-                if !(q_try_again_button.single().focus) {
-                    //let (mut fill, mut try_again_button) = q_try_again_button.single_mut();
+                
+                if !(q_try_again_button.single().1.focus) {
+                    let (mut fill, mut try_again_button) = q_try_again_button.single_mut();
 
-                    //fill.color = Color::rgba(0.8, 0.8, 0.8, 0.6);
-                    //try_again_button.focus = true;
+                    fill.color = Color::rgba(0.925, 0.925, 0.925, 0.7);
+                    try_again_button.focus = true;
                 }
-                */
+                
 
                 if buttons.just_pressed(MouseButton::Left) {
-                    println!("You pressed me! {:?}", position);
+                    q_board.single_mut().reset();
                 }
+            } else if q_try_again_button.single().1.focus {
+                let (mut fill, mut try_again_button) = q_try_again_button.single_mut();
+
+                fill.color = Color::rgba(0.95, 0.95, 0.95, 0.7);
+                try_again_button.focus = false;
             }
         }
     }
@@ -92,7 +98,7 @@ fn place_symbol_on_click(
                 let position = position
                     - Vec2 {
                         x: window.physical_width() as f32 / 2.0,
-                        y: window.physical_width() as f32 / 2.0,
+                        y: window.physical_height() as f32 / 2.0,
                     };
                 let x = (position.x
                     / ((CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac)
@@ -102,7 +108,7 @@ fn place_symbol_on_click(
                     / ((CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac)
                     + 0.5)
                     .floor();
-
+                
                 if !(-4.0..=4.0).contains(&x) || !(-4.0..=4.0).contains(&y) {
                     return;
                 }
@@ -116,7 +122,7 @@ fn place_symbol_on_click(
                 if q_board.single().game_active() {
                     let mut board = q_board.single_mut();
                     if board.place_symbol(x, y, &cell) {
-                        place_symbol_single(&mut commands, x, y, &cell);
+                        place_symbol(&mut commands, x, y, scale_fac, &cell);
                         update_grid_cover(&board, q_grid_covers);
                     }
                 }
