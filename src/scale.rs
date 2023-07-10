@@ -45,24 +45,23 @@ pub fn resize(
         for mut style in &mut q_ui_scale {
             // Size
             if let Val::Px(_) = style.size.width {
-                style.size.width *= scale_fac;
+                style.size.width *= scale_fac_diffrens;
             }
             if let Val::Px(_) = style.size.height {
-                style.size.height *= scale_fac;
+                style.size.height *= scale_fac_diffrens;
             }
             // Padding
-            if let Val::Px(px) = style.padding.bottom {
-                println!("Padding bottom: {px}");
-                style.padding.bottom *= scale_fac;
+            if let Val::Px(_) = style.padding.bottom {
+                style.padding.bottom *= scale_fac_diffrens;
             }
             if let Val::Px(_) = style.padding.left {
-                style.padding.left *= scale_fac;
+                style.padding.left *= scale_fac_diffrens;
             }
             if let Val::Px(_) = style.padding.right {
-                style.padding.right *= scale_fac;
+                style.padding.right *= scale_fac_diffrens;
             }
             if let Val::Px(_) = style.padding.top {
-                style.padding.top *= scale_fac;
+                style.padding.top *= scale_fac_diffrens;
             }
         }
     }
