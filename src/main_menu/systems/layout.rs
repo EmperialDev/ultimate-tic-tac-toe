@@ -2,6 +2,8 @@ use bevy::prelude::*;
 
 use crate::main_menu::components::*;
 use crate::main_menu::styles::*;
+use crate::scale::UiScale;
+use crate::scale::TextScale;
 
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     build_main_menu(&mut commands, &asset_server);
@@ -25,20 +27,24 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
         .with_children(|parent| {
             // === Menu Background
             parent
-                .spawn(NodeBundle {
+                .spawn((NodeBundle {
                     style: MENU_BACKGROUND_STYLE,
                     background_color: Color::BLACK.with_a(0.6).into(),
                     ..Default::default()
-                })
+                },
+                UiScale,
+            ))
                 .with_children(|parent| {
                     // === Title ===
-                    parent.spawn(TextBundle {
+                    parent.spawn((TextBundle {
                         text: Text::from_section(
                             "Ultimate Tic Tac Toe",
                             get_title_text_style(asset_server),
                         ),
                         ..Default::default()
-                    });
+                    },
+                    TextScale,
+                ));
                     // === Play Button ===
                     parent
                         .spawn((
@@ -48,15 +54,18 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                                 ..Default::default()
                             },
                             PlayButton,
+                            UiScale,
                         ))
                         .with_children(|parent| {
-                            parent.spawn(TextBundle {
+                            parent.spawn((TextBundle {
                                 text: Text::from_section(
                                     "Play",
                                     get_button_text_style(asset_server),
                                 ),
                                 ..Default::default()
-                            });
+                            },
+                            TextScale,
+                        ));
                         });
                     // === Quit Button ===
                     parent
@@ -67,15 +76,18 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                                 ..Default::default()
                             },
                             QuitButton,
+                            UiScale,
                         ))
                         .with_children(|parent| {
-                            parent.spawn(TextBundle {
+                            parent.spawn((TextBundle {
                                 text: Text::from_section(
                                     "Quit",
                                     get_button_text_style(asset_server),
                                 ),
                                 ..Default::default()
-                            });
+                            },
+                            TextScale,
+                        ));
                         });
                 });
         })

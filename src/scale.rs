@@ -8,6 +8,7 @@ pub fn resize(
     mut q_scale_factor: Query<&mut ScaleFactor>,
     mut q_scale: Query<&mut Transform, (With<Scale>, Without<TextScale>)>,
     mut q_text_scale: Query<(&mut Transform, &mut Text), (With<TextScale>, Without<Scale>)>,
+    mut q_ui_scale: Query<&mut Style, With<UiScale>>,
 ) {
     for event in resize_event.iter() {
         let scale_num_x =
@@ -40,6 +41,30 @@ pub fn resize(
             transform.translation *= scale_fac_diffrens;
             text.sections[0].style.font_size *= scale_fac_diffrens;
         }
+
+        for mut style in &mut q_ui_scale {
+            // Size
+            if let Val::Px(_) = style.size.width {
+                style.size.width *= scale_fac;
+            }
+            if let Val::Px(_) = style.size.height {
+                style.size.height *= scale_fac;
+            }
+            // Padding
+            if let Val::Px(px) = style.padding.bottom {
+                println!("Padding bottom: {px}");
+                style.padding.bottom *= scale_fac;
+            }
+            if let Val::Px(_) = style.padding.left {
+                style.padding.left *= scale_fac;
+            }
+            if let Val::Px(_) = style.padding.right {
+                style.padding.right *= scale_fac;
+            }
+            if let Val::Px(_) = style.padding.top {
+                style.padding.top *= scale_fac;
+            }
+        }
     }
 }
 
@@ -48,6 +73,9 @@ pub struct Scale;
 
 #[derive(Component)]
 pub struct TextScale;
+
+#[derive(Component)]
+pub struct UiScale;
 
 #[derive(Component, Default)]
 pub struct ScaleFactor(pub f32);
