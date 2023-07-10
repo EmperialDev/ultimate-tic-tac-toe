@@ -116,6 +116,12 @@ pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &
     }
 }
 
+pub fn reset_grid_cover(mut q_grid_covers: Query<&mut Sprite, With<GridCover>>) {
+    for mut sprite in &mut q_grid_covers {
+        sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0);
+    }
+}
+
 pub fn create_grid_cover(mut commands: Commands) {
     // Invisible grid covers
     for x in -1i32..2i32 {
@@ -188,8 +194,18 @@ pub fn place_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cel
             NOUGHT_COLOR
         }),
         Scale,
+        Symbol,
     ));
+}
+
+pub fn despawn_symbols(commands: &mut Commands, q_symbols: Query<Entity, With<Symbol>>) {
+    for symbol in &q_symbols {
+        commands.entity(symbol).despawn();
+    }
 }
 
 #[derive(Component)]
 pub struct GridCover(u8);
+
+#[derive(Component)]
+pub struct Symbol;

@@ -1,23 +1,21 @@
 use bevy::prelude::*;
 use std::fmt::Debug;
 
+use crate::AppState;
+
 #[derive(Component, Default)]
 pub struct Board {
     grid: [[Cell; 9]; 9],
     grid_state: [GridState; 9],
     player_turn: CrossOrNought,
     last_grid: Option<usize>,
-    game_active: bool,
 }
 
 impl Board {
     /// Takes in the pos of the symbol
     ///
     /// `x` and `y`: range: -4..5
-    pub fn place_symbol(&mut self, x: f32, y: f32, cell: &Cell) -> bool {
-        if !self.game_active {
-            return false;
-        }
+    pub fn place_symbol(&mut self, x: f32, y: f32, cell: &Cell, app_state: &mut NextState<AppState>) -> bool {
 
         let index_in_grid = (x + 4.0) as usize % 3 + ((y + 4.0) as usize % 3) * 3;
         let grid_index = (((x + 4.0) / 3.0).floor() + ((y + 4.0) / 3.0).floor() * 3.0) as usize;
@@ -39,7 +37,8 @@ impl Board {
                 };
 
                 if Self::check_if_won(&self.grid_state.map(|f| f.into())).is_some() {
-                    self.game_active = false;
+                    println!("You won!");
+                    app_state.set(AppState::GaneOver);
                 }
             }
         }
@@ -77,12 +76,6 @@ impl Board {
         self.grid_state = [GridState::default(); 9];
         self.player_turn = CrossOrNought::Cross;
         self.last_grid = None;
-        self.game_active = true;
-    }
-
-    /// Returns if the game is over
-    pub fn game_active(&self) -> bool {
-        self.game_active
     }
 
     /// Returns the grid

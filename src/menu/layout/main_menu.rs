@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-use crate::main_menu::components::*;
-use crate::main_menu::styles::*;
+use crate::menu::components::*;
+use crate::menu::styles::*;
 use crate::scale::UiScale;
 use crate::scale::TextScale;
 
@@ -28,7 +28,7 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
             // === Menu Background
             parent
                 .spawn((NodeBundle {
-                    style: MENU_BACKGROUND_STYLE,
+                    style: get_menu_background_style(1.0),
                     background_color: Color::BLACK.with_a(0.6).into(),
                     ..Default::default()
                 },
@@ -39,7 +39,7 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                     parent.spawn((TextBundle {
                         text: Text::from_section(
                             "Ultimate Tic Tac Toe",
-                            get_title_text_style(asset_server),
+                            get_title_text_style(asset_server, 1.0),
                         ),
                         ..Default::default()
                     },
@@ -49,7 +49,7 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                     parent
                         .spawn((
                             ButtonBundle {
-                                style: BUTTON_STYLE,
+                                style: get_button_style(1.0),
                                 background_color: NORMAL_BUTTON_COLOR.into(),
                                 ..Default::default()
                             },
@@ -60,7 +60,7 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                             parent.spawn((TextBundle {
                                 text: Text::from_section(
                                     "Play",
-                                    get_button_text_style(asset_server),
+                                    get_button_text_style(asset_server, 1.0),
                                 ),
                                 ..Default::default()
                             },
@@ -71,7 +71,7 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                     parent
                         .spawn((
                             ButtonBundle {
-                                style: BUTTON_STYLE,
+                                style: get_button_style(1.0),
                                 background_color: NORMAL_BUTTON_COLOR.into(),
                                 ..Default::default()
                             },
@@ -82,7 +82,7 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                             parent.spawn((TextBundle {
                                 text: Text::from_section(
                                     "Quit",
-                                    get_button_text_style(asset_server),
+                                    get_button_text_style(asset_server, 1.0),
                                 ),
                                 ..Default::default()
                             },

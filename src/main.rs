@@ -4,15 +4,15 @@ pub mod generate_shapes;
 pub mod player_input;
 pub mod scale;
 pub mod visuals;
-mod main_menu;
+pub mod menu;
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
-use main_menu::MainMenuPlugin;
-use player_input::click;
+use menu::MenuPlugin;
+use player_input::main_mouse_system;
 use scale::{resize, ScaleFactor};
-use visuals::{create_board, create_grid_cover};
+use visuals::{create_board, create_grid_cover, despawn_symbols, Symbol, reset_grid_cover, GridCover};
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -38,24 +38,29 @@ fn main() {
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
         // My Plugins
-        .add_plugin(MainMenuPlugin)
+        .add_plugin(MenuPlugin)
         // Startup Systems
         .add_startup_system(setup)
         .add_startup_system(create_board)
         .add_startup_system(create_grid_cover)
         // Systems
         .add_system(resize)
-        .add_system(click)
+        .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
+        .add_system(main_mouse_system.in_set(OnUpdate(AppState::Game)))
         .run()
 }
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
     commands.spawn(Board::default());
+    commands.spawn(ScaleFactor::default());
+}
 
-    let scale_factor = ScaleFactor::default();
+fn reset_board(mut commands: Commands, q_symbols: Query<Entity, With<Symbol>>, mut q_board: Query<&mut Board>, q_grid_covers: Query<&mut Sprite, With<GridCover>>) {
+    q_board.single_mut().reset();
 
-    commands.spawn(scale_factor);
+    despawn_symbols(&mut commands, q_symbols);
+    reset_grid_cover(q_grid_covers);
 }
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
