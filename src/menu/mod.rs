@@ -1,13 +1,19 @@
-pub mod layout;
 pub mod components;
-pub mod styles;
 pub mod interactions;
+pub mod layout;
+pub mod styles;
 
 use bevy::prelude::*;
 
 use crate::AppState;
 
-use self::{layout::{main_menu::*, game_over::{spawn_game_over_menu, despawn_game_over_menu}}, interactions::*};
+use self::{
+    interactions::*,
+    layout::{
+        game_over::{despawn_game_over_menu, spawn_game_over_menu},
+        main_menu::*,
+    },
+};
 
 pub struct MenuPlugin;
 

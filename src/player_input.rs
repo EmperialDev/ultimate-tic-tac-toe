@@ -1,11 +1,10 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-
 use crate::{
     board::{Board, Cell},
     scale::ScaleFactor,
     visuals::{spawn_symbol, update_grid_cover, GridCover},
-    CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, AppState,
+    AppState, CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS,
 };
 
 pub fn main_mouse_system(
@@ -36,7 +35,7 @@ pub fn main_mouse_system(
                     / ((CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac)
                     + 0.5)
                     .floor();
-                
+
                 if !(-4.0..=4.0).contains(&x) || !(-4.0..=4.0).contains(&y) {
                     return;
                 }

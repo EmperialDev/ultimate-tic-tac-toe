@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 use crate::menu::components::*;
 use crate::menu::styles::*;
-use crate::scale::UiScale;
 use crate::scale::TextScale;
+use crate::scale::UiScale;
 
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     build_main_menu(&mut commands, &asset_server);
@@ -27,24 +27,26 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
         .with_children(|parent| {
             // === Menu Background
             parent
-                .spawn((NodeBundle {
-                    style: get_menu_background_style(1.0),
-                    background_color: Color::BLACK.with_a(0.6).into(),
-                    ..Default::default()
-                },
-                UiScale,
-            ))
-                .with_children(|parent| {
-                    // === Title ===
-                    parent.spawn((TextBundle {
-                        text: Text::from_section(
-                            "Ultimate Tic Tac Toe",
-                            get_title_text_style(asset_server, 1.0),
-                        ),
+                .spawn((
+                    NodeBundle {
+                        style: get_menu_background_style(1.0),
+                        background_color: Color::BLACK.with_a(0.6).into(),
                         ..Default::default()
                     },
-                    TextScale,
-                ));
+                    UiScale,
+                ))
+                .with_children(|parent| {
+                    // === Title ===
+                    parent.spawn((
+                        TextBundle {
+                            text: Text::from_section(
+                                "Ultimate Tic Tac Toe",
+                                get_title_text_style(asset_server, 1.0),
+                            ),
+                            ..Default::default()
+                        },
+                        TextScale,
+                    ));
                     // === Play Button ===
                     parent
                         .spawn((
@@ -57,15 +59,16 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                             UiScale,
                         ))
                         .with_children(|parent| {
-                            parent.spawn((TextBundle {
-                                text: Text::from_section(
-                                    "Play",
-                                    get_button_text_style(asset_server, 1.0),
-                                ),
-                                ..Default::default()
-                            },
-                            TextScale,
-                        ));
+                            parent.spawn((
+                                TextBundle {
+                                    text: Text::from_section(
+                                        "Play",
+                                        get_button_text_style(asset_server, 1.0),
+                                    ),
+                                    ..Default::default()
+                                },
+                                TextScale,
+                            ));
                         });
                     // === Quit Button ===
                     parent
@@ -79,15 +82,16 @@ fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> 
                             UiScale,
                         ))
                         .with_children(|parent| {
-                            parent.spawn((TextBundle {
-                                text: Text::from_section(
-                                    "Quit",
-                                    get_button_text_style(asset_server, 1.0),
-                                ),
-                                ..Default::default()
-                            },
-                            TextScale,
-                        ));
+                            parent.spawn((
+                                TextBundle {
+                                    text: Text::from_section(
+                                        "Quit",
+                                        get_button_text_style(asset_server, 1.0),
+                                    ),
+                                    ..Default::default()
+                                },
+                                TextScale,
+                            ));
                         });
                 });
         })

@@ -1,10 +1,10 @@
 pub mod board;
 pub mod game_over;
 pub mod generate_shapes;
+pub mod menu;
 pub mod player_input;
 pub mod scale;
 pub mod visuals;
-pub mod menu;
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
@@ -12,7 +12,9 @@ use board::Board;
 use menu::MenuPlugin;
 use player_input::main_mouse_system;
 use scale::{resize, ScaleFactor};
-use visuals::{spawn_board, spawn_grid_cover, despawn_symbols, Symbol, reset_grid_cover, GridCover};
+use visuals::{
+    despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, GridCover, Symbol,
+};
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -56,7 +58,12 @@ fn setup(mut commands: Commands) {
     commands.spawn(ScaleFactor::default());
 }
 
-fn reset_board(mut commands: Commands, q_symbols: Query<Entity, With<Symbol>>, mut q_board: Query<&mut Board>, q_grid_covers: Query<&mut Sprite, With<GridCover>>) {
+fn reset_board(
+    mut commands: Commands,
+    q_symbols: Query<Entity, With<Symbol>>,
+    mut q_board: Query<&mut Board>,
+    q_grid_covers: Query<&mut Sprite, With<GridCover>>,
+) {
     q_board.single_mut().reset();
 
     despawn_symbols(&mut commands, q_symbols);

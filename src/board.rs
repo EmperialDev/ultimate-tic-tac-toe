@@ -15,8 +15,13 @@ impl Board {
     /// Takes in the pos of the symbol
     ///
     /// `x` and `y`: range: -4..5
-    pub fn place_symbol(&mut self, x: f32, y: f32, cell: &Cell, app_state: &mut NextState<AppState>) -> bool {
-
+    pub fn place_symbol(
+        &mut self,
+        x: f32,
+        y: f32,
+        cell: &Cell,
+        app_state: &mut NextState<AppState>,
+    ) -> bool {
         let index_in_grid = (x + 4.0) as usize % 3 + ((y + 4.0) as usize % 3) * 3;
         let grid_index = (((x + 4.0) / 3.0).floor() + ((y + 4.0) / 3.0).floor() * 3.0) as usize;
 

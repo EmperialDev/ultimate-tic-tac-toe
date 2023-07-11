@@ -25,11 +25,10 @@ pub fn resize(
 
         let scale_fac_diffrens = if let Some(last_scale_fac) = *last_scale_fac {
             scale_fac / last_scale_fac
-            
         } else {
             scale_fac
         };
-        
+
         *last_scale_fac = Some(scale_fac);
 
         for mut transform in &mut q_scale {
