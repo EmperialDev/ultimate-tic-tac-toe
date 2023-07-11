@@ -195,6 +195,45 @@ pub fn spawn_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cel
     ));
 }
 
+pub fn spawn_large_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cell: &Cell) {
+    if cell == &Cell::Empty {
+        error!("Tried to spawn an empty symbol!");
+        return;
+    }
+
+    let large_x = ((x + 4.0) / 3.0).floor() - 1.0;
+    let large_y = ((y + 4.0) / 3.0).floor() - 1.0;
+
+    let translation = Vec3 {
+        x: large_x * 3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
+        y: large_y * 3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
+        z: 15.0,
+    };
+
+    commands.spawn((
+        ShapeBundle {
+            path: if cell == &Cell::Cross {
+                generate_cross_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+            } else {
+                generate_nought_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+            },
+            transform: Transform {
+                translation: translation * scale_fac,
+                scale: Vec3::splat(3.0 * scale_fac),
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+        Fill::color(if cell == &Cell::Cross {
+            CROSS_COLOR
+        } else {
+            NOUGHT_COLOR
+        }),
+        Scale,
+        Symbol,
+    ));
+}
+
 pub fn despawn_symbols(commands: &mut Commands, q_symbols: Query<Entity, With<Symbol>>) {
     for symbol in &q_symbols {
         commands.entity(symbol).despawn();

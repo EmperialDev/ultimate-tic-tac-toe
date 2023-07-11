@@ -108,6 +108,17 @@ impl Board {
         &self.grid_state[index]
     }
 
+    pub fn grid_won_by(&self, x: f32, y: f32) -> Option<Cell> {
+        let index = (((x + 4.0) / 3.0).floor() + ((y + 4.0) / 3.0).floor() * 3.0) as usize;
+
+        let cell = self.grid_state[index].into();
+        if let Cell::Empty = cell {
+            None
+        } else {
+            Some(cell)
+        }
+    }
+
     /// Returns if anyone won
     pub fn board_won_by(&self) -> &WinState {
         &self.won_by

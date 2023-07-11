@@ -3,7 +3,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     board::{Board, Cell},
     scale::ScaleFactor,
-    visuals::{spawn_symbol, update_grid_cover, GridCover},
+    visuals::{spawn_large_symbol, spawn_symbol, update_grid_cover, GridCover},
     AppState, CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS,
 };
 
@@ -50,6 +50,10 @@ pub fn main_mouse_system(
                 if board.place_symbol(x, y, &cell, &mut app_state_next_state) {
                     spawn_symbol(&mut commands, x, y, scale_fac, &cell);
                     update_grid_cover(&board, q_grid_covers);
+
+                    if let Some(won_by) = board.grid_won_by(x, y) {
+                        spawn_large_symbol(&mut commands, x, y, scale_fac, &won_by);
+                    }
                 }
             } else {
                 println!("Cursor out of window")
