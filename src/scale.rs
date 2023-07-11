@@ -7,7 +7,7 @@ pub fn resize(
     mut resize_event: EventReader<WindowResized>,
     mut q_scale_factor: Query<&mut ScaleFactor>,
     mut q_scale: Query<&mut Transform, (With<Scale>, Without<TextScale>)>,
-    mut q_text_scale: Query<(&mut Transform, &mut Text), (With<TextScale>, Without<Scale>)>,
+    mut q_text_scale: Query<(&mut Transform, &mut Text), With<TextScale>>,
     mut q_ui_scale: Query<&mut Style, With<UiScale>>,
 ) {
     for event in resize_event.iter() {

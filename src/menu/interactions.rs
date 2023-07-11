@@ -5,6 +5,7 @@ use crate::menu::components::*;
 use crate::menu::styles::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
 use crate::AppState;
 
+#[allow(clippy::complexity)]
 pub fn interact_with_play_button(
     mut q_button: Query<
         (&Interaction, &mut BackgroundColor),
@@ -28,6 +29,7 @@ pub fn interact_with_play_button(
     }
 }
 
+#[allow(clippy::complexity)]
 pub fn interact_with_quit_button(
     mut q_button: Query<
         (&Interaction, &mut BackgroundColor),

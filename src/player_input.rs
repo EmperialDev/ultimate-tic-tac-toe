@@ -16,7 +16,7 @@ pub fn main_mouse_system(
     q_grid_covers: Query<(&mut Sprite, &GridCover)>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if buttons.just_pressed(MouseButton::Left) || buttons.just_pressed(MouseButton::Right) {
+    if buttons.just_pressed(MouseButton::Left) {
         if let Ok(window) = q_windows.get_single() {
             if let Some(position) = window.physical_cursor_position() {
                 let scale_factor = q_scale_factor.single();
@@ -40,22 +40,20 @@ pub fn main_mouse_system(
                     return;
                 }
 
-                if buttons.just_pressed(MouseButton::Left) {
-                    let mut board = q_board.single_mut();
-                    if let Some(player_turn) = board.place_symbol(x, y, &mut app_state_next_state) {
-                        spawn_symbol(&mut commands, x, y, scale_fac, player_turn);
-                        update_grid_cover(&board, q_grid_covers);
+                let mut board = q_board.single_mut();
+                if let Some(player_turn) = board.place_symbol(x, y, &mut app_state_next_state) {
+                    spawn_symbol(&mut commands, x, y, scale_fac, player_turn);
+                    update_grid_cover(&board, q_grid_covers);
 
-                        if let Some(won_by) = board.grid_won_by(x, y) {
-                            spawn_large_symbol(&mut commands, x, y, scale_fac, won_by);
-                        }
+                    if let Some(won_by) = board.grid_won_by(x, y) {
+                        spawn_large_symbol(&mut commands, x, y, scale_fac, won_by);
                     }
                 }
             } else {
                 println!("Cursor out of window")
             }
         } else {
-            println!("Coun't get window")
+            error!("Coun't get window")
         };
     };
 }

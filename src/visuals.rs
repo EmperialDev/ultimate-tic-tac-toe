@@ -9,7 +9,7 @@ use crate::{
     GRID_LINE_THICKNESS, NOUGHT_COLOR, TEXT_SIZE,
 };
 
-const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.15);
+const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.20);
 
 pub fn spawn_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Grid lines
@@ -146,9 +146,9 @@ pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &
         match board.state_for_grid(grid_cover.0 as usize) {
             GridState::Active => sprite.color = Color::NONE,
             GridState::Inactive => sprite.color = GRID_COVER_COLOR,
-            GridState::Tie => sprite.color = GRID_COVER_COLOR.with_a(0.3),
-            GridState::WonByCross => sprite.color = CROSS_COLOR.with_a(0.15),
-            GridState::WonByNought => sprite.color = NOUGHT_COLOR.with_a(0.2),
+            GridState::Tie => sprite.color = GRID_COVER_COLOR.with_a(0.4),
+            GridState::WonByCross => sprite.color = CROSS_COLOR.with_a(0.2),
+            GridState::WonByNought => sprite.color = NOUGHT_COLOR.with_a(0.25),
         }
     }
 }
