@@ -11,7 +11,7 @@ use crate::{
 
 const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.15);
 
-pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Grid lines
     for x in 0..2 {
         for y in -4..4 {
@@ -105,40 +105,19 @@ pub fn create_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     */
 }
 
-pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &GridCover)>) {
-    for (mut sprite, grid_cover) in &mut q_grid_covers {
-        match board.state_for_grid(grid_cover.0 as usize) {
-            GridState::Active => sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0),
-            GridState::Inactive => sprite.color = GRID_COVER_COLOR,
-            GridState::WonByCross => sprite.color = CROSS_COLOR.with_a(0.15),
-            GridState::WonByNought => sprite.color = NOUGHT_COLOR.with_a(0.2),
-        }
-    }
-}
-
-pub fn reset_grid_cover(mut q_grid_covers: Query<&mut Sprite, With<GridCover>>) {
-    for mut sprite in &mut q_grid_covers {
-        sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0);
-    }
-}
-
-pub fn create_grid_cover(mut commands: Commands) {
+pub fn spawn_grid_cover(mut commands: Commands) {
     // Invisible grid covers
     for x in -1i32..2i32 {
         for y in -1i32..2i32 {
             let translation = Vec3::new(
-                (x * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
-                    - GRID_LINE_THICKNESS / 4.0 * x as f32,
-                (y * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
-                    - GRID_LINE_THICKNESS / 4.0 * y as f32,
+                (x * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
+                (y * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
                 10.0,
             );
 
             let scale = Vec3::new(
-                3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
-                    - GRID_LINE_THICKNESS / 2.0 * (x as f32).abs(),
-                3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
-                    - GRID_LINE_THICKNESS / 2.0 * (y as f32).abs(),
+                3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS,
+                3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS,
                 1.0,
             );
 
@@ -162,7 +141,24 @@ pub fn create_grid_cover(mut commands: Commands) {
     }
 }
 
-pub fn place_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cell: &Cell) {
+pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &GridCover)>) {
+    for (mut sprite, grid_cover) in &mut q_grid_covers {
+        match board.state_for_grid(grid_cover.0 as usize) {
+            GridState::Active => sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0),
+            GridState::Inactive => sprite.color = GRID_COVER_COLOR,
+            GridState::WonByCross => sprite.color = CROSS_COLOR.with_a(0.15),
+            GridState::WonByNought => sprite.color = NOUGHT_COLOR.with_a(0.2),
+        }
+    }
+}
+
+pub fn reset_grid_cover(mut q_grid_covers: Query<&mut Sprite, With<GridCover>>) {
+    for mut sprite in &mut q_grid_covers {
+        sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0);
+    }
+}
+
+pub fn spawn_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cell: &Cell) {
     if cell == &Cell::Empty {
         error!("Tried to spawn an empty symbol!");
         return;

@@ -12,7 +12,7 @@ use board::Board;
 use menu::MenuPlugin;
 use player_input::main_mouse_system;
 use scale::{resize, ScaleFactor};
-use visuals::{create_board, create_grid_cover, despawn_symbols, Symbol, reset_grid_cover, GridCover};
+use visuals::{spawn_board, spawn_grid_cover, despawn_symbols, Symbol, reset_grid_cover, GridCover};
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -41,8 +41,8 @@ fn main() {
         .add_plugin(MenuPlugin)
         // Startup Systems
         .add_startup_system(setup)
-        .add_startup_system(create_board)
-        .add_startup_system(create_grid_cover)
+        .add_startup_system(spawn_board)
+        .add_startup_system(spawn_grid_cover)
         // Systems
         .add_system(resize)
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))

@@ -4,7 +4,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     board::{Board, Cell},
     scale::ScaleFactor,
-    visuals::{place_symbol, update_grid_cover, GridCover},
+    visuals::{spawn_symbol, update_grid_cover, GridCover},
     CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, AppState,
 };
 
@@ -49,7 +49,7 @@ pub fn main_mouse_system(
 
                 let mut board = q_board.single_mut();
                 if board.place_symbol(x, y, &cell, &mut app_state_next_state) {
-                    place_symbol(&mut commands, x, y, scale_fac, &cell);
+                    spawn_symbol(&mut commands, x, y, scale_fac, &cell);
                     update_grid_cover(&board, q_grid_covers);
                 }
             } else {
