@@ -19,20 +19,19 @@ impl Board {
         &mut self,
         x: f32,
         y: f32,
-        cell: &Cell,
         app_state: &mut NextState<AppState>,
-    ) -> bool {
+    ) -> Option<CrossOrNought> {
         let index_in_grid = (x + 4.0) as usize % 3 + ((y + 4.0) as usize % 3) * 3;
         let grid_index = (((x + 4.0) / 3.0).floor() + ((y + 4.0) / 3.0).floor() * 3.0) as usize;
 
         if self.grid[grid_index][index_in_grid] != Cell::Empty {
-            return false;
+            return None;
         }
         if self.state_for_grid(grid_index) != &GridState::Active {
-            return false;
+            return None;
         }
 
-        self.grid[grid_index][index_in_grid] = *cell;
+        self.grid[grid_index][index_in_grid] = self.player_turn.clone().into();
 
         let check_if_board_is_won = match Self::check_if_won(&self.grid[grid_index]) {
             WinState::WonByCross => {
@@ -77,12 +76,14 @@ impl Board {
             }
         }
 
+        let player_turn = self.player_turn.to_owned();
+
         self.player_turn = match self.player_turn {
             CrossOrNought::Cross => CrossOrNought::Nought,
             CrossOrNought::Nought => CrossOrNought::Cross,
         };
 
-        true
+        Some(player_turn)
     }
 
     /// Resets the board
@@ -108,14 +109,13 @@ impl Board {
         &self.grid_state[index]
     }
 
-    pub fn grid_won_by(&self, x: f32, y: f32) -> Option<Cell> {
+    pub fn grid_won_by(&self, x: f32, y: f32) -> Option<CrossOrNought> {
         let index = (((x + 4.0) / 3.0).floor() + ((y + 4.0) / 3.0).floor() * 3.0) as usize;
 
-        let cell = self.grid_state[index].into();
-        if let Cell::Empty = cell {
-            None
-        } else {
-            Some(cell)
+        match self.grid_state[index] {
+            GridState::Active | GridState::Inactive | GridState::Tie => None,
+            GridState::WonByCross => Some(CrossOrNought::Cross),
+            GridState::WonByNought => Some(CrossOrNought::Nought),
         }
     }
 
@@ -190,11 +190,20 @@ pub enum Cell {
     Nought, // O
 }
 
-#[derive(Default, Debug, PartialEq, Eq)]
+#[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub enum CrossOrNought {
     #[default]
     Cross,
     Nought,
+}
+
+impl From<CrossOrNought> for Cell {
+    fn from(val: CrossOrNought) -> Self {
+        match val {
+            CrossOrNought::Cross => Self::Cross,
+            CrossOrNought::Nought => Self::Nought,
+        }
+    }
 }
 
 #[derive(Default, Debug, PartialEq, Eq)]
@@ -219,9 +228,9 @@ pub enum GridState {
 impl From<GridState> for Cell {
     fn from(val: GridState) -> Self {
         match val {
-            GridState::Active | GridState::Inactive | GridState::Tie => Cell::Empty,
-            GridState::WonByCross => Cell::Cross,
-            GridState::WonByNought => Cell::Nought,
+            GridState::Active | GridState::Inactive | GridState::Tie => Self::Empty,
+            GridState::WonByCross => Self::Cross,
+            GridState::WonByNought => Self::Nought,
         }
     }
 }

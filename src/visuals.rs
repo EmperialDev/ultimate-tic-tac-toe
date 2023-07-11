@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
 use crate::{
-    board::{Cell, GridState},
+    board::{CrossOrNought, GridState},
     generate_shapes::{generate_cross_path, generate_nought_path},
     scale::{Scale, TextScale},
     Board, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
@@ -159,12 +159,13 @@ pub fn reset_grid_cover(mut q_grid_covers: Query<&mut Sprite, With<GridCover>>) 
     }
 }
 
-pub fn spawn_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cell: &Cell) {
-    if cell == &Cell::Empty {
-        error!("Tried to spawn an empty symbol!");
-        return;
-    }
-
+pub fn spawn_symbol(
+    commands: &mut Commands,
+    x: f32,
+    y: f32,
+    scale_fac: f32,
+    player_turn: CrossOrNought,
+) {
     let translation = Vec3 {
         x: x * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
         y: y * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
@@ -173,10 +174,13 @@ pub fn spawn_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cel
 
     commands.spawn((
         ShapeBundle {
-            path: if cell == &Cell::Cross {
-                generate_cross_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
-            } else {
-                generate_nought_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+            path: match player_turn {
+                CrossOrNought::Cross => {
+                    generate_cross_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+                }
+                CrossOrNought::Nought => {
+                    generate_nought_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+                }
             },
             transform: Transform {
                 translation: translation * scale_fac,
@@ -185,22 +189,22 @@ pub fn spawn_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cel
             },
             ..Default::default()
         },
-        Fill::color(if cell == &Cell::Cross {
-            CROSS_COLOR
-        } else {
-            NOUGHT_COLOR
+        Fill::color(match player_turn {
+            CrossOrNought::Cross => CROSS_COLOR,
+            CrossOrNought::Nought => NOUGHT_COLOR,
         }),
         Scale,
         Symbol,
     ));
 }
 
-pub fn spawn_large_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f32, cell: &Cell) {
-    if cell == &Cell::Empty {
-        error!("Tried to spawn an empty symbol!");
-        return;
-    }
-
+pub fn spawn_large_symbol(
+    commands: &mut Commands,
+    x: f32,
+    y: f32,
+    scale_fac: f32,
+    player_turn: CrossOrNought,
+) {
     let large_x = ((x + 4.0) / 3.0).floor() - 1.0;
     let large_y = ((y + 4.0) / 3.0).floor() - 1.0;
 
@@ -212,10 +216,13 @@ pub fn spawn_large_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f3
 
     commands.spawn((
         ShapeBundle {
-            path: if cell == &Cell::Cross {
-                generate_cross_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
-            } else {
-                generate_nought_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+            path: match player_turn {
+                CrossOrNought::Cross => {
+                    generate_cross_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+                }
+                CrossOrNought::Nought => {
+                    generate_nought_path(CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS)
+                }
             },
             transform: Transform {
                 translation: translation * scale_fac,
@@ -224,10 +231,9 @@ pub fn spawn_large_symbol(commands: &mut Commands, x: f32, y: f32, scale_fac: f3
             },
             ..Default::default()
         },
-        Fill::color(if cell == &Cell::Cross {
-            CROSS_COLOR
-        } else {
-            NOUGHT_COLOR
+        Fill::color(match player_turn {
+            CrossOrNought::Cross => CROSS_COLOR,
+            CrossOrNought::Nought => NOUGHT_COLOR,
         }),
         Scale,
         Symbol,
