@@ -38,7 +38,13 @@ fn main() {
     App::new()
         // Bevy Plugins
         .insert_resource(Msaa::Sample4)
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: String::from("Ultimate Tic Tac Toe"),
+                ..Default::default()
+            }),
+            ..Default::default()
+        }))
         .add_plugin(ShapePlugin)
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
