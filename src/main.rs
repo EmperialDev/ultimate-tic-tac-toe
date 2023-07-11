@@ -1,9 +1,9 @@
 pub mod board;
 pub mod game_over;
-pub mod generate_shapes;
 pub mod menu;
 pub mod player_input;
 pub mod scale;
+pub mod shapes;
 pub mod visuals;
 
 use bevy::prelude::*;
@@ -13,7 +13,8 @@ use menu::MenuPlugin;
 use player_input::main_mouse_system;
 use scale::{resize, ScaleFactor};
 use visuals::{
-    despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, GridCover, Symbol,
+    despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
+    GridCover, Symbol,
 };
 
 // The size of each cell
@@ -22,8 +23,10 @@ const CELL_SIZE: f32 = 60.0;
 const CELL_PADDING: f32 = 6.0;
 // The thickness of the grid lines
 const GRID_LINE_THICKNESS: f32 = 6.0;
-// Text size
-const TEXT_SIZE: f32 = 60.0;
+// Top text size
+const TOP_TEXT_SIZE: f32 = 60.0;
+// Bottom text size
+const BOTTOM_TEXT_SIZE: f32 = 40.0;
 // Cross color
 const CROSS_COLOR: Color = Color::rgb(0.3, 0.3, 0.85);
 // Nought color
@@ -48,7 +51,7 @@ fn main() {
         // Systems
         .add_system(resize)
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
-        .add_system(main_mouse_system.in_set(OnUpdate(AppState::Game)))
+        .add_systems((main_mouse_system, update_bottom_text).in_set(OnUpdate(AppState::Game)))
         .run()
 }
 

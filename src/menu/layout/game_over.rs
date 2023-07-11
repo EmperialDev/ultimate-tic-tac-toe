@@ -34,9 +34,9 @@ fn build_game_over_menu(
     scale_fac: f32,
 ) -> Entity {
     let winner_text = match q_board.single().board_won_by() {
-        crate::board::WinState::WonByCross => "X won the game",
-        crate::board::WinState::WonByNought => "O won the game",
-        crate::board::WinState::Tie => "Tie no one won",
+        crate::board::WinState::WonByCross => "X won the game!",
+        crate::board::WinState::WonByNought => "O won the game!",
+        crate::board::WinState::Tie => "Tie nobody won!",
         crate::board::WinState::NotWon => unreachable!(),
     };
 

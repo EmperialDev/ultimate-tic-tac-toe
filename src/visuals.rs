@@ -3,10 +3,10 @@ use bevy_prototype_lyon::prelude::*;
 
 use crate::{
     board::{CrossOrNought, GridState},
-    generate_shapes::{generate_cross_path, generate_nought_path},
     scale::{Scale, TextScale},
-    Board, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
-    GRID_LINE_THICKNESS, NOUGHT_COLOR, TEXT_SIZE,
+    shapes::{generate_cross_path, generate_nought_path},
+    Board, BOTTOM_TEXT_SIZE, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
+    GRID_LINE_THICKNESS, NOUGHT_COLOR, TOP_TEXT_SIZE,
 };
 
 const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.20);
@@ -55,29 +55,54 @@ pub fn spawn_board(mut commands: Commands, asset_server: Res<AssetServer>) {
         }
     }
 
-    // Text
-    let text_style = TextStyle {
+    // Top text
+    let top_text_style = TextStyle {
         font: asset_server.load("fonts/Poppins-SemiBold.ttf"),
-        font_size: TEXT_SIZE,
+        font_size: TOP_TEXT_SIZE,
         color: Color::rgb(0.1, 0.1, 0.1),
     };
 
-    let translation = Vec3 {
-        x: 0.0,
-        y: 5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
-        z: 0.0,
+    // Bottom text
+    let bottom_text_style = TextStyle {
+        font: asset_server.load("fonts/Poppins-Medium.ttf"),
+        font_size: BOTTOM_TEXT_SIZE,
+        color: Color::rgb(0.1, 0.1, 0.1),
     };
+
     // Top text
     commands.spawn((
         Text2dBundle {
-            text: Text::from_section("Welcome to Ultimate Tic Tac Toe", text_style),
+            text: Text::from_section("Welcome to Ultimate Tic Tac Toe", top_text_style),
             transform: Transform {
-                translation,
+                translation: Vec3::new(
+                    0.0,
+                    5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
+                    0.0,
+                ),
                 ..Default::default()
             },
             ..default()
         },
         TextScale,
+    ));
+
+    // Bottom text
+    commands.spawn((
+        Text2dBundle {
+            text: Text::from_section("X's turn", bottom_text_style),
+            transform: Transform {
+                translation: Vec3::new(
+                    0.0,
+                    -5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
+                        + GRID_LINE_THICKNESS,
+                    0.0,
+                ),
+                ..Default::default()
+            },
+            ..default()
+        },
+        TextScale,
+        BottomText,
     ));
 
     // Creats the cells?
@@ -103,6 +128,25 @@ pub fn spawn_board(mut commands: Commands, asset_server: Res<AssetServer>) {
         }
     }
     */
+}
+
+pub fn update_bottom_text(
+    mut q_bottom_text: Query<&mut Text, With<BottomText>>,
+    q_board: Query<&Board>,
+    mut last_player_turn: Local<CrossOrNought>,
+) {
+    let player_turn = q_board.single().player_turn();
+    if *player_turn != *last_player_turn {
+        match player_turn {
+            CrossOrNought::Cross => {
+                q_bottom_text.single_mut().sections[0].value = "X's turn".to_owned()
+            }
+            CrossOrNought::Nought => {
+                q_bottom_text.single_mut().sections[0].value = "O's turn".to_owned()
+            }
+        }
+        *last_player_turn = player_turn.to_owned();
+    }
 }
 
 pub fn spawn_grid_cover(mut commands: Commands) {
@@ -251,3 +295,6 @@ pub struct GridCover(u8);
 
 #[derive(Component)]
 pub struct Symbol;
+
+#[derive(Component)]
+pub struct BottomText;

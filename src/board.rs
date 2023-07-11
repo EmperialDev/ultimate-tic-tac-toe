@@ -33,24 +33,25 @@ impl Board {
 
         self.grid[grid_index][index_in_grid] = self.player_turn.clone().into();
 
-        let check_if_board_is_won = match Self::check_if_won(&self.grid[grid_index]) {
-            WinState::WonByCross => {
-                self.grid_state[grid_index] = GridState::WonByCross;
-                true
-            }
-            WinState::WonByNought => {
-                self.grid_state[grid_index] = GridState::WonByNought;
-                true
-            }
-            WinState::Tie => {
-                self.grid_state[grid_index] = GridState::Tie;
-                false
-            }
-            WinState::NotWon => false,
-        };
+        let check_if_board_is_won =
+            match Self::check_if_won(&self.grid[grid_index].map(|f| f.into())) {
+                WinState::WonByCross => {
+                    self.grid_state[grid_index] = GridState::WonByCross;
+                    true
+                }
+                WinState::WonByNought => {
+                    self.grid_state[grid_index] = GridState::WonByNought;
+                    true
+                }
+                WinState::Tie => {
+                    self.grid_state[grid_index] = GridState::Tie;
+                    true
+                }
+                WinState::NotWon => false,
+            };
 
         if check_if_board_is_won {
-            self.won_by = Self::check_if_won(&self.grid_state.map(|f| f.into()));
+            self.won_by = *Self::check_if_won(&self.grid_state.map(|f| f.into()));
 
             if self.won_by != WinState::NotWon {
                 app_state.set(AppState::GameOver);
@@ -124,20 +125,16 @@ impl Board {
         &self.won_by
     }
 
-    fn check_if_won(grid: &[Cell; 9]) -> WinState {
+    fn check_if_won(grid: &[WinState; 9]) -> &WinState {
         // 0 1 2
         // 3 4 5
         // 6 7 8
         for i in 0..3 {
-            if grid[i * 3 + 1] != Cell::Empty
+            if grid[i * 3 + 1] != WinState::NotWon
                 && grid[i * 3] == grid[i * 3 + 1]
                 && grid[i * 3 + 1] == grid[i * 3 + 2]
             {
-                match grid[i * 3 + 1] {
-                    Cell::Cross => return WinState::WonByCross,
-                    Cell::Nought => return WinState::WonByNought,
-                    _ => unreachable!(),
-                }
+                return &grid[i * 3 + 1];
             }
         }
 
@@ -145,40 +142,31 @@ impl Board {
         // 1 4 7
         // 2 5 8
         for i in 0..3 {
-            if grid[i + 3] != Cell::Empty && grid[i] == grid[i + 3] && grid[i + 3] == grid[i + 6] {
-                match grid[i + 3] {
-                    Cell::Cross => return WinState::WonByCross,
-                    Cell::Nought => return WinState::WonByNought,
-                    _ => unreachable!(),
-                }
+            if grid[i + 3] != WinState::NotWon
+                && grid[i] == grid[i + 3]
+                && grid[i + 3] == grid[i + 6]
+            {
+                return &grid[i + 3];
             }
         }
 
-        if grid[4] != Cell::Empty {
+        if grid[4] != WinState::NotWon {
             // 0 4 8
             if grid[0] == grid[4] && grid[4] == grid[8] {
-                match grid[4] {
-                    Cell::Cross => return WinState::WonByCross,
-                    Cell::Nought => return WinState::WonByNought,
-                    _ => unreachable!(),
-                }
+                return &grid[4];
             }
 
             // 2 4 6
             if grid[2] == grid[4] && grid[4] == grid[6] {
-                match grid[4] {
-                    Cell::Cross => return WinState::WonByCross,
-                    Cell::Nought => return WinState::WonByNought,
-                    _ => unreachable!(),
-                }
+                return &grid[4];
             }
         }
 
-        if !grid.contains(&Cell::Empty) {
-            return WinState::Tie;
+        if !grid.contains(&WinState::NotWon) {
+            return &WinState::Tie;
         }
 
-        WinState::NotWon
+        &WinState::NotWon
     }
 }
 
@@ -188,6 +176,16 @@ pub enum Cell {
     Empty,
     Cross,  // X
     Nought, // O
+}
+
+impl From<Cell> for WinState {
+    fn from(val: Cell) -> Self {
+        match val {
+            Cell::Empty => Self::NotWon,
+            Cell::Cross => Self::WonByCross,
+            Cell::Nought => Self::WonByNought,
+        }
+    }
 }
 
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
@@ -206,7 +204,7 @@ impl From<CrossOrNought> for Cell {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Eq)]
+#[derive(Default, Debug, PartialEq, Eq, Clone, Copy)]
 pub enum WinState {
     #[default]
     NotWon,
@@ -231,6 +229,17 @@ impl From<GridState> for Cell {
             GridState::Active | GridState::Inactive | GridState::Tie => Self::Empty,
             GridState::WonByCross => Self::Cross,
             GridState::WonByNought => Self::Nought,
+        }
+    }
+}
+
+impl From<GridState> for WinState {
+    fn from(val: GridState) -> Self {
+        match val {
+            GridState::Active | GridState::Inactive => Self::NotWon,
+            GridState::WonByCross => Self::WonByCross,
+            GridState::WonByNought => Self::WonByNought,
+            GridState::Tie => Self::Tie,
         }
     }
 }
