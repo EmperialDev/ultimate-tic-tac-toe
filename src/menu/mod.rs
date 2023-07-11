@@ -22,7 +22,7 @@ impl Plugin for MenuPlugin {
         app
             // OnEnter state system
             .add_system(spawn_main_menu.in_schedule(OnEnter(AppState::MainMenu)))
-            .add_system(spawn_game_over_menu.in_schedule(OnEnter(AppState::GaneOver)))
+            .add_system(spawn_game_over_menu.in_schedule(OnEnter(AppState::GameOver)))
             // Systems
             .add_systems(
                 (interact_with_play_button, interact_with_quit_button)
@@ -30,10 +30,10 @@ impl Plugin for MenuPlugin {
             )
             .add_systems(
                 (interact_with_play_button, interact_with_quit_button)
-                    .in_set(OnUpdate(AppState::GaneOver)),
+                    .in_set(OnUpdate(AppState::GameOver)),
             )
             // OnExit State Systems
             .add_system(despawn_main_menu.in_schedule(OnExit(AppState::MainMenu)))
-            .add_system(despawn_game_over_menu.in_schedule(OnExit(AppState::GaneOver)));
+            .add_system(despawn_game_over_menu.in_schedule(OnExit(AppState::GameOver)));
     }
 }

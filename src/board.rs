@@ -8,7 +8,7 @@ pub struct Board {
     grid: [[Cell; 9]; 9],
     grid_state: [GridState; 9],
     player_turn: CrossOrNought,
-    last_grid: Option<usize>,
+    won_by: Option<CrossOrNought>,
 }
 
 impl Board {
@@ -34,20 +34,17 @@ impl Board {
 
         self.grid[grid_index][index_in_grid] = *cell;
 
-        if let Some(last_grid) = self.last_grid {
-            if let Some(won_by) = Self::check_if_won(&self.grid[last_grid]) {
-                self.grid_state[last_grid] = match won_by {
-                    CrossOrNought::Cross => GridState::WonByCross,
-                    CrossOrNought::Nought => GridState::WonByNought,
-                };
+        if let Some(won_by) = Self::check_if_won(&self.grid[grid_index]) {
+            self.grid_state[grid_index] = match won_by {
+                CrossOrNought::Cross => GridState::WonByCross,
+                CrossOrNought::Nought => GridState::WonByNought,
+            };
 
-                if Self::check_if_won(&self.grid_state.map(|f| f.into())).is_some() {
-                    println!("You won!");
-                    app_state.set(AppState::GaneOver);
-                }
+            if let Some(won_by) = Self::check_if_won(&self.grid_state.map(|f| f.into())) {
+                self.won_by = Some(won_by);
+                app_state.set(AppState::GameOver);
             }
         }
-        self.last_grid = Some(index_in_grid);
 
         if self.grid_state[index_in_grid] == GridState::WonByCross
             || self.grid_state[index_in_grid] == GridState::WonByNought
@@ -80,7 +77,7 @@ impl Board {
         self.grid = [[Cell::default(); 9]; 9];
         self.grid_state = [GridState::default(); 9];
         self.player_turn = CrossOrNought::Cross;
-        self.last_grid = None;
+        self.won_by = None;
     }
 
     /// Returns the grid
@@ -99,8 +96,8 @@ impl Board {
     }
 
     /// Returns if anyone won
-    pub fn board_won_by(&self) -> Option<CrossOrNought> {
-        Self::check_if_won(&self.grid_state.map(|f| f.into()))
+    pub fn board_won_by(&self) -> Option<&CrossOrNought> {
+        self.won_by.as_ref()
     }
 
     fn check_if_won(grid: &[Cell; 9]) -> Option<CrossOrNought> {
