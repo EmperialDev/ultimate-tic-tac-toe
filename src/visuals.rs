@@ -144,8 +144,9 @@ pub fn spawn_grid_cover(mut commands: Commands) {
 pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &GridCover)>) {
     for (mut sprite, grid_cover) in &mut q_grid_covers {
         match board.state_for_grid(grid_cover.0 as usize) {
-            GridState::Active => sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0),
+            GridState::Active => sprite.color = Color::NONE,
             GridState::Inactive => sprite.color = GRID_COVER_COLOR,
+            GridState::Tie => sprite.color = GRID_COVER_COLOR.with_a(0.3),
             GridState::WonByCross => sprite.color = CROSS_COLOR.with_a(0.15),
             GridState::WonByNought => sprite.color = NOUGHT_COLOR.with_a(0.2),
         }
@@ -154,7 +155,7 @@ pub fn update_grid_cover(board: &Board, mut q_grid_covers: Query<(&mut Sprite, &
 
 pub fn reset_grid_cover(mut q_grid_covers: Query<&mut Sprite, With<GridCover>>) {
     for mut sprite in &mut q_grid_covers {
-        sprite.color = Color::rgba(0.0, 0.0, 0.0, 0.0);
+        sprite.color = Color::NONE;
     }
 }
 

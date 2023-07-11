@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 use crate::board::Board;
-use crate::board::CrossOrNought;
 use crate::menu::components::*;
 use crate::menu::styles::*;
 use crate::scale::ScaleFactor;
@@ -34,13 +33,11 @@ fn build_game_over_menu(
     q_board: Query<&Board>,
     scale_fac: f32,
 ) -> Entity {
-    let winner_text = if let Some(winner) = q_board.single().board_won_by() {
-        match winner {
-            CrossOrNought::Cross => "X won the game",
-            CrossOrNought::Nought => "O won the game",
-        }
-    } else {
-        "No one won"
+    let winner_text = match q_board.single().board_won_by() {
+        crate::board::WinState::WonByCross => "X won the game",
+        crate::board::WinState::WonByNought => "O won the game",
+        crate::board::WinState::Tie => "Tie no one won",
+        crate::board::WinState::NotWon => unreachable!(),
     };
 
     let main_menu_entity = commands

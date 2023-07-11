@@ -8,7 +8,7 @@ pub struct Board {
     grid: [[Cell; 9]; 9],
     grid_state: [GridState; 9],
     player_turn: CrossOrNought,
-    won_by: Option<CrossOrNought>,
+    won_by: WinState,
 }
 
 impl Board {
@@ -34,20 +34,33 @@ impl Board {
 
         self.grid[grid_index][index_in_grid] = *cell;
 
-        if let Some(won_by) = Self::check_if_won(&self.grid[grid_index]) {
-            self.grid_state[grid_index] = match won_by {
-                CrossOrNought::Cross => GridState::WonByCross,
-                CrossOrNought::Nought => GridState::WonByNought,
-            };
+        let check_if_board_is_won = match Self::check_if_won(&self.grid[grid_index]) {
+            WinState::WonByCross => {
+                self.grid_state[grid_index] = GridState::WonByCross;
+                true
+            }
+            WinState::WonByNought => {
+                self.grid_state[grid_index] = GridState::WonByNought;
+                true
+            }
+            WinState::Tie => {
+                self.grid_state[grid_index] = GridState::Tie;
+                false
+            }
+            WinState::NotWon => false,
+        };
 
-            if let Some(won_by) = Self::check_if_won(&self.grid_state.map(|f| f.into())) {
-                self.won_by = Some(won_by);
+        if check_if_board_is_won {
+            self.won_by = Self::check_if_won(&self.grid_state.map(|f| f.into()));
+
+            if self.won_by != WinState::NotWon {
                 app_state.set(AppState::GameOver);
             }
         }
 
         if self.grid_state[index_in_grid] == GridState::WonByCross
             || self.grid_state[index_in_grid] == GridState::WonByNought
+            || self.grid_state[index_in_grid] == GridState::Tie
         {
             for i in 0..9 {
                 if self.grid_state[i] == GridState::Inactive {
@@ -77,7 +90,7 @@ impl Board {
         self.grid = [[Cell::default(); 9]; 9];
         self.grid_state = [GridState::default(); 9];
         self.player_turn = CrossOrNought::Cross;
-        self.won_by = None;
+        self.won_by = WinState::default();
     }
 
     /// Returns the grid
@@ -96,11 +109,11 @@ impl Board {
     }
 
     /// Returns if anyone won
-    pub fn board_won_by(&self) -> Option<&CrossOrNought> {
-        self.won_by.as_ref()
+    pub fn board_won_by(&self) -> &WinState {
+        &self.won_by
     }
 
-    fn check_if_won(grid: &[Cell; 9]) -> Option<CrossOrNought> {
+    fn check_if_won(grid: &[Cell; 9]) -> WinState {
         // 0 1 2
         // 3 4 5
         // 6 7 8
@@ -110,8 +123,8 @@ impl Board {
                 && grid[i * 3 + 1] == grid[i * 3 + 2]
             {
                 match grid[i * 3 + 1] {
-                    Cell::Cross => return Some(CrossOrNought::Cross),
-                    Cell::Nought => return Some(CrossOrNought::Nought),
+                    Cell::Cross => return WinState::WonByCross,
+                    Cell::Nought => return WinState::WonByNought,
                     _ => unreachable!(),
                 }
             }
@@ -123,8 +136,8 @@ impl Board {
         for i in 0..3 {
             if grid[i + 3] != Cell::Empty && grid[i] == grid[i + 3] && grid[i + 3] == grid[i + 6] {
                 match grid[i + 3] {
-                    Cell::Cross => return Some(CrossOrNought::Cross),
-                    Cell::Nought => return Some(CrossOrNought::Nought),
+                    Cell::Cross => return WinState::WonByCross,
+                    Cell::Nought => return WinState::WonByNought,
                     _ => unreachable!(),
                 }
             }
@@ -134,8 +147,8 @@ impl Board {
             // 0 4 8
             if grid[0] == grid[4] && grid[4] == grid[8] {
                 match grid[4] {
-                    Cell::Cross => return Some(CrossOrNought::Cross),
-                    Cell::Nought => return Some(CrossOrNought::Nought),
+                    Cell::Cross => return WinState::WonByCross,
+                    Cell::Nought => return WinState::WonByNought,
                     _ => unreachable!(),
                 }
             }
@@ -143,14 +156,18 @@ impl Board {
             // 2 4 6
             if grid[2] == grid[4] && grid[4] == grid[6] {
                 match grid[4] {
-                    Cell::Cross => return Some(CrossOrNought::Cross),
-                    Cell::Nought => return Some(CrossOrNought::Nought),
+                    Cell::Cross => return WinState::WonByCross,
+                    Cell::Nought => return WinState::WonByNought,
                     _ => unreachable!(),
                 }
             }
         }
 
-        None
+        if !grid.contains(&Cell::Empty) {
+            return WinState::Tie;
+        }
+
+        WinState::NotWon
     }
 }
 
@@ -169,6 +186,15 @@ pub enum CrossOrNought {
     Nought,
 }
 
+#[derive(Default, Debug, PartialEq, Eq)]
+pub enum WinState {
+    #[default]
+    NotWon,
+    WonByCross,
+    WonByNought,
+    Tie,
+}
+
 #[derive(Default, PartialEq, Eq, Clone, Copy)]
 pub enum GridState {
     #[default]
@@ -176,12 +202,13 @@ pub enum GridState {
     Inactive,
     WonByCross,
     WonByNought,
+    Tie,
 }
 
 impl From<GridState> for Cell {
     fn from(val: GridState) -> Self {
         match val {
-            GridState::Active | GridState::Inactive => Cell::Empty,
+            GridState::Active | GridState::Inactive | GridState::Tie => Cell::Empty,
             GridState::WonByCross => Cell::Cross,
             GridState::WonByNought => Cell::Nought,
         }
