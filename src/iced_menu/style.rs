@@ -22,12 +22,12 @@ impl iced::widget::container::StyleSheet for MenuContainer {
     }
 }
 
-pub enum MenuButton {
+pub enum MenuButtonStyle {
     Play,
     Quit,
 }
 
-impl iced::widget::button::StyleSheet for MenuButton {
+impl iced::widget::button::StyleSheet for MenuButtonStyle {
     type Style = Theme;
 
     fn active(&self, _: &Self::Style) -> button::Appearance {
@@ -56,8 +56,8 @@ impl iced::widget::button::StyleSheet for MenuButton {
         let active_style = &self.active(style);
 
         let pressed_color = match self {
-            MenuButton::Play => iced::Color::from_rgb(0.35, 0.75, 0.35),
-            MenuButton::Quit => iced::Color::from_rgb(0.9, 0.15, 0.15),
+            MenuButtonStyle::Play => iced::Color::from_rgb(0.35, 0.75, 0.35),
+            MenuButtonStyle::Quit => iced::Color::from_rgb(0.9, 0.15, 0.15),
         };
 
         button::Appearance {

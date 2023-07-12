@@ -1,4 +1,5 @@
 use bevy::{prelude::*, window::WindowResized};
+use bevy_iced::IcedSettings;
 
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
 
@@ -9,6 +10,7 @@ pub fn resize(
     mut q_scale: Query<&mut Transform, (With<Scale>, Without<TextScale>)>,
     mut q_text_scale: Query<(&mut Transform, &mut Text), With<TextScale>>,
     mut q_ui_scale: Query<&mut Style, With<UiScale>>,
+    mut iced_settings: ResMut<IcedSettings>,
 ) {
     for event in resize_event.iter() {
         let scale_num_x =
@@ -30,6 +32,10 @@ pub fn resize(
         };
 
         *last_scale_fac = Some(scale_fac);
+
+        if iced_settings.scale_factor.is_some() {
+            iced_settings.scale_factor = Some((scale_fac * 3.0) as f64)
+        }
 
         for mut transform in &mut q_scale {
             transform.translation *= scale_fac_diffrens;

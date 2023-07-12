@@ -1,37 +1,37 @@
 use bevy_iced::{
     iced::{
-        alignment,
-        theme::{Button, Container},
-        widget::{button, container, text, Column},
+        theme::Container,
+        widget::{container, text, Column},
         Length, Padding,
     },
     IcedContext,
 };
 
 use crate::iced_menu::{
-    style::{MenuButton, MenuContainer},
-    UiMessage,
+    style::{MenuButtonStyle, MenuContainer},
+    UiMessage, components::menu_button,
 };
 
 pub fn game_over_menu(mut ctx: IcedContext<UiMessage>) {
     let title = text("Won the game");
 
-    let play_button =
-        button(text("Play again").horizontal_alignment(alignment::Horizontal::Center))
-            .width(Length::Fixed(80.0))
-            .style(Button::Custom(Box::new(MenuButton::Play)))
-            .on_press(UiMessage::PlayButton);
+    let play_again_button = menu_button(
+        "Play again", 
+        MenuButtonStyle::Play, 
+    UiMessage::PlayButton,
+);
 
-    let quit_button = button(text("Quit").horizontal_alignment(alignment::Horizontal::Center))
-        .width(Length::Fixed(80.0))
-        .style(Button::Custom(Box::new(MenuButton::Quit)))
-        .on_press(UiMessage::QuitButton);
+    let quit_button = menu_button(
+        "Quit", 
+        MenuButtonStyle::Quit, 
+        UiMessage::QuitButton,
+    );
 
     let menu = Column::new()
         .push(title)
-        .push(play_button)
+        .push(play_again_button)
         .push(quit_button)
-        .spacing(5)
+        .spacing(4)
         .align_items(bevy_iced::iced::Alignment::Center);
 
     let manu_container = container(menu)

@@ -11,6 +11,7 @@ use self::{
 pub mod interactions;
 pub mod layout;
 pub mod style;
+pub mod components;
 
 pub struct IcedMenuPlugin;
 
@@ -18,7 +19,7 @@ impl Plugin for IcedMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<UiMessage>()
             .insert_resource(IcedSettings {
-                scale_factor: Some(4.0),
+                scale_factor: Some(1.0),
                 ..Default::default()
             })
             // Main menu
