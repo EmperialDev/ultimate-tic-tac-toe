@@ -10,23 +10,15 @@ use bevy_iced::{
 use crate::iced_menu::{
     components::menu_button,
     style::{MenuButtonStyle, MenuContainer},
-    UiMessage,
+    UiMessage, POPPINS_SEMI_BOLD,
 };
 
 pub fn main_menu(mut ctx: IcedContext<UiMessage>) {
-    let title = text("Ultimate Tic Tac Toe");
+    let title = text("Ultimate Tic Tac Toe").font(POPPINS_SEMI_BOLD);
 
-    let play_button = menu_button(
-        "Play",
-        MenuButtonStyle::Play,
-        UiMessage::PlayButton,
-    );
+    let play_button = menu_button("Play", MenuButtonStyle::Play, UiMessage::PlayButton);
 
-    let quit_button = menu_button(
-        "Quit", 
-        MenuButtonStyle::Quit, 
-        UiMessage::QuitButton,
-    );
+    let quit_button = menu_button("Quit", MenuButtonStyle::Quit, UiMessage::QuitButton);
 
     let menu = Column::new()
         .push(title)

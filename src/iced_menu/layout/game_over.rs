@@ -8,24 +8,17 @@ use bevy_iced::{
 };
 
 use crate::iced_menu::{
+    components::menu_button,
     style::{MenuButtonStyle, MenuContainer},
-    UiMessage, components::menu_button,
+    UiMessage,
 };
 
 pub fn game_over_menu(mut ctx: IcedContext<UiMessage>) {
     let title = text("Won the game");
 
-    let play_again_button = menu_button(
-        "Play again", 
-        MenuButtonStyle::Play, 
-    UiMessage::PlayButton,
-);
+    let play_again_button = menu_button("Play again", MenuButtonStyle::Play, UiMessage::PlayButton);
 
-    let quit_button = menu_button(
-        "Quit", 
-        MenuButtonStyle::Quit, 
-        UiMessage::QuitButton,
-    );
+    let quit_button = menu_button("Quit", MenuButtonStyle::Quit, UiMessage::QuitButton);
 
     let menu = Column::new()
         .push(title)
