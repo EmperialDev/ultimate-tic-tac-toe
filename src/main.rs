@@ -1,5 +1,6 @@
 pub mod board;
 pub mod game_over;
+pub mod iced_menu;
 pub mod menu;
 pub mod player_input;
 pub mod scale;
@@ -7,9 +8,10 @@ pub mod shapes;
 pub mod visuals;
 
 use bevy::prelude::*;
+use bevy_iced::IcedPlugin;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
-use menu::MenuPlugin;
+use iced_menu::IcedMenuPlugin;
 use player_input::main_mouse_system;
 use scale::{resize, ScaleFactor};
 use visuals::{
@@ -46,10 +48,11 @@ fn main() {
             ..Default::default()
         }))
         .add_plugin(ShapePlugin)
+        .add_plugin(IcedPlugin)
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
         // My Plugins
-        .add_plugin(MenuPlugin)
+        .add_plugin(IcedMenuPlugin)
         // Startup Systems
         .add_startup_system(setup)
         .add_startup_system(spawn_board)
