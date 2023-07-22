@@ -9,6 +9,9 @@ edition = "2021"
 bevy = "0.10.1"
 bevy_prototype_lyon = "0.8.0"
 
+[build-dependencies]
+embed-resource = "2.2.0"
+
 [workspace]
 resolver = "2"
 
