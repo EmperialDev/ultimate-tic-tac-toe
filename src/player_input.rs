@@ -16,10 +16,6 @@ pub fn main_mouse_system(
     q_grid_covers: Query<(&mut Sprite, &GridCover)>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if buttons.just_pressed(MouseButton::Middle) {
-        app_state_next_state.set(AppState::GameOver);
-    }
-
     if buttons.just_pressed(MouseButton::Left) {
         if let Ok(window) = q_windows.get_single() {
             if let Some(position) = window.physical_cursor_position() {

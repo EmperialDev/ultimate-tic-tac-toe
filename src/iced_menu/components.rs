@@ -1,9 +1,6 @@
 use bevy_iced::{
-    iced::{
-        alignment, theme,
-        widget::{button, text, Button},
-        Length,
-    },
+    iced::widget::{button, text, Button},
+    iced::{alignment, theme, Length},
     iced_wgpu::Renderer,
 };
 

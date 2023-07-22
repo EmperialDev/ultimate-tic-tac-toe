@@ -1,16 +1,26 @@
-use bevy::prelude::{App, IntoSystemConfigs, OnUpdate, Plugin};
+use bevy::prelude::{
+    App, Commands, Entity, IntoSystemAppConfig, IntoSystemConfigs, OnEnter, OnUpdate, Plugin,
+    Query, With,
+};
 use bevy_iced::{iced::Font, IcedSettings};
 
-use crate::AppState;
+use crate::{
+    board::{Board, WinState},
+    AppState,
+};
 
 use self::{
     interactions::interaction_system,
-    layout::{game_over::game_over_menu, main_menu::main_menu},
+    layout::{
+        game_over::{game_over_menu, Symbol},
+        main_menu::main_menu,
+    },
 };
 
 pub mod components;
 pub mod interactions;
 pub mod layout;
+mod menu_shapes;
 pub mod style;
 
 pub struct IcedMenuPlugin;
@@ -33,9 +43,31 @@ impl Plugin for IcedMenuPlugin {
             })
             // Main menu
             .add_systems((main_menu, interaction_system).in_set(OnUpdate(AppState::MainMenu)))
+            // Store the symbol
+            .add_system(spawn_canvas_symbol.in_schedule(OnEnter(AppState::GameOver)))
             // Game Over Menu
             .add_systems((game_over_menu, interaction_system).in_set(OnUpdate(AppState::GameOver)));
     }
+}
+
+fn spawn_canvas_symbol(
+    mut commands: Commands,
+    board: Query<&Board>,
+    symbol: Query<Entity, With<Symbol>>,
+) {
+    for entity in &symbol {
+        commands.entity(entity).despawn();
+    }
+
+    match board.single().board_won_by() {
+        WinState::WonByCross => {
+            commands.spawn(Symbol::cross());
+        }
+        WinState::WonByNought => {
+            commands.spawn(Symbol::nought());
+        }
+        WinState::NotWon | WinState::Tie => (),
+    };
 }
 
 #[derive(Clone)]
