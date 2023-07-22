@@ -6,7 +6,7 @@ pub mod scale;
 pub mod shapes;
 pub mod visuals;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, window::PrimaryWindow, winit::WinitWindows};
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use menu::MenuPlugin;
@@ -16,6 +16,7 @@ use visuals::{
     despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
     GridCover, Symbol,
 };
+use winit::window::Icon;
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -51,6 +52,7 @@ fn main() {
         // My Plugins
         .add_plugin(MenuPlugin)
         // Startup Systems
+        .add_startup_system(set_window_icon)
         .add_startup_system(setup)
         .add_startup_system(spawn_board)
         .add_startup_system(spawn_grid_cover)
@@ -77,6 +79,26 @@ fn reset_board(
 
     despawn_symbols(&mut commands, q_symbols);
     reset_grid_cover(q_grid_covers);
+}
+
+fn set_window_icon(windows: NonSend<WinitWindows>, q_primary: Query<Entity, With<PrimaryWindow>>) {
+    if let Ok(entity) = q_primary.get_single() {
+        if let Some(primary) = windows.get_window(entity) {
+            if let Ok(image) = image::open("assets\\icon.png") {
+                let image = image.into_rgba8();
+                let (width, height) = image.dimensions();
+                let rgba = image.into_raw();
+
+                let icon = Icon::from_rgba(rgba, width, height).unwrap();
+
+                primary.set_window_icon(Some(icon));
+
+                return;
+            }
+        }
+    }
+
+    warn!("Coun't find icon, it should be here 'assets\\icon.png' but wasn't");
 }
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]

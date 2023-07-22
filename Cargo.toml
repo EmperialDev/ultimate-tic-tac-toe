@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 bevy = "0.10.1"
 bevy_prototype_lyon = "0.8.0"
+winit = "0.28.6"
+image = "0.24.6"
 
 [build-dependencies]
 embed-resource = "2.2.0"
