@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowResized};
+use bevy::{prelude::*, window::{WindowResized, PrimaryWindow}};
 use bevy_iced::IcedSettings;
 
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
@@ -6,12 +6,20 @@ use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
 pub fn resize(
     mut last_scale_fac: Local<Option<f32>>,
     mut resize_event: EventReader<WindowResized>,
+    q_primary: Query<&Window, With<PrimaryWindow>>,
     mut q_scale_factor: Query<&mut ScaleFactor>,
     mut q_scale: Query<&mut Transform, (With<Scale>, Without<TextScale>)>,
     mut q_text_scale: Query<(&mut Transform, &mut Text), With<TextScale>>,
     mut iced_settings: ResMut<IcedSettings>,
 ) {
     for event in resize_event.iter() {
+        
+        let os_scale = if let Ok(primary) = q_primary.get_single() {
+            primary.scale_factor()
+        } else {
+            1.0
+        };
+
         let scale_num_x =
             9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 2.5 * TOP_TEXT_SIZE;
         let scale_num_y =
@@ -33,7 +41,7 @@ pub fn resize(
         *last_scale_fac = Some(scale_fac);
 
         if iced_settings.scale_factor.is_some() {
-            iced_settings.scale_factor = Some((scale_fac * 3.0) as f64)
+            iced_settings.scale_factor = Some((scale_fac * 3.0) as f64 * os_scale)
         }
 
         for mut transform in &mut q_scale {

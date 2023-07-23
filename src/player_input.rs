@@ -18,14 +18,14 @@ pub fn main_mouse_system(
 ) {
     if buttons.just_pressed(MouseButton::Left) {
         if let Ok(window) = q_windows.get_single() {
-            if let Some(position) = window.physical_cursor_position() {
+            if let Some(position) = window.cursor_position() {
                 let scale_factor = q_scale_factor.single();
                 let scale_fac = scale_factor.0;
 
                 let position = position
                     - Vec2 {
-                        x: window.physical_width() as f32 / 2.0,
-                        y: window.physical_height() as f32 / 2.0,
+                        x: window.width() as f32 / 2.0,
+                        y: window.height() as f32 / 2.0,
                     };
                 let x = (position.x
                     / ((CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac)
