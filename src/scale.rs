@@ -1,4 +1,5 @@
 use bevy::{prelude::*, window::WindowResized};
+use bevy_iced::IcedSettings;
 
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
 
@@ -8,7 +9,7 @@ pub fn resize(
     mut q_scale_factor: Query<&mut ScaleFactor>,
     mut q_scale: Query<&mut Transform, (With<Scale>, Without<TextScale>)>,
     mut q_text_scale: Query<(&mut Transform, &mut Text), With<TextScale>>,
-    mut q_ui_scale: Query<&mut Style, With<UiScale>>,
+    mut iced_settings: ResMut<IcedSettings>,
 ) {
     for event in resize_event.iter() {
         let scale_num_x =
@@ -31,6 +32,10 @@ pub fn resize(
 
         *last_scale_fac = Some(scale_fac);
 
+        if iced_settings.scale_factor.is_some() {
+            iced_settings.scale_factor = Some((scale_fac * 3.0) as f64)
+        }
+
         for mut transform in &mut q_scale {
             transform.translation *= scale_fac_diffrens;
             transform.scale *= scale_fac_diffrens;
@@ -40,29 +45,6 @@ pub fn resize(
             transform.translation *= scale_fac_diffrens;
             text.sections[0].style.font_size *= scale_fac_diffrens;
         }
-
-        for mut style in &mut q_ui_scale {
-            // Size
-            if let Val::Px(_) = style.size.width {
-                style.size.width *= scale_fac_diffrens;
-            }
-            if let Val::Px(_) = style.size.height {
-                style.size.height *= scale_fac_diffrens;
-            }
-            // Padding
-            if let Val::Px(_) = style.padding.bottom {
-                style.padding.bottom *= scale_fac_diffrens;
-            }
-            if let Val::Px(_) = style.padding.left {
-                style.padding.left *= scale_fac_diffrens;
-            }
-            if let Val::Px(_) = style.padding.right {
-                style.padding.right *= scale_fac_diffrens;
-            }
-            if let Val::Px(_) = style.padding.top {
-                style.padding.top *= scale_fac_diffrens;
-            }
-        }
     }
 }
 
@@ -71,9 +53,6 @@ pub struct Scale;
 
 #[derive(Component)]
 pub struct TextScale;
-
-#[derive(Component)]
-pub struct UiScale;
 
 #[derive(Component, Default)]
 pub struct ScaleFactor(pub f32);
