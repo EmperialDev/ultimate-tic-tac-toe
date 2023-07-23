@@ -1,9 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 pub mod board;
-pub mod game_over;
 pub mod iced_menu;
-pub mod menu;
 pub mod player_input;
 pub mod scale;
 pub mod shapes;
