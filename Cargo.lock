@@ -4154,6 +4154,7 @@ dependencies = [
  "bevy",
  "bevy_iced",
  "bevy_prototype_lyon",
+ "console_error_panic_hook",
  "embed-resource",
  "iced",
  "image",

@@ -18,6 +18,7 @@ use visuals::{
     despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
     GridCover, Symbol,
 };
+#[allow(unused_imports)]
 use winit::window::Icon;
 
 // The size of each cell
@@ -38,12 +39,16 @@ const NOUGHT_COLOR: Color = Color::rgb(0.85, 0.3, 0.3);
 const CROSS_AND_NOUGHT_LINE_THICKNESS: f32 = 10.0;
 
 fn main() {
+    #[cfg(target_arch = "wasm32")]
+    console_error_panic_hook::set_once();
+
     App::new()
         // Bevy Plugins
         .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("Ultimate Tic Tac Toe"),
+                canvas: Some("#bevy".to_owned()),
                 ..Default::default()
             }),
             ..Default::default()
