@@ -6,12 +6,14 @@ pub mod player_input;
 pub mod scale;
 pub mod shapes;
 pub mod visuals;
+pub mod loading;
 
 use bevy::{prelude::*, window::PrimaryWindow, winit::WinitWindows};
 use bevy_iced::IcedPlugin;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use iced_menu::IcedMenuPlugin;
+use loading::LoadingPlugin;
 use player_input::main_mouse_system;
 use scale::{resize, ScaleFactor};
 use visuals::{
@@ -58,13 +60,13 @@ fn main() {
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
         // My Plugins
+        .add_plugin(LoadingPlugin)
         .add_plugin(IcedMenuPlugin)
         // Startup Systems
         .add_startup_system(set_window_icon)
         .add_startup_system(setup)
-        .add_startup_system(spawn_board)
-        .add_startup_system(spawn_grid_cover)
         // Systems
+        .add_systems((spawn_board, spawn_grid_cover).in_schedule(OnExit(AppState::Loading)))
         .add_system(resize)
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
         .add_systems((main_mouse_system, update_bottom_text).in_set(OnUpdate(AppState::Game)))
@@ -89,6 +91,7 @@ fn reset_board(
     reset_grid_cover(q_grid_covers);
 }
 
+#[cfg(target_os = "windows")]
 fn set_window_icon(windows: NonSend<WinitWindows>, q_primary: Query<Entity, With<PrimaryWindow>>) {
     if let Ok(entity) = q_primary.get_single() {
         if let Some(primary) = windows.get_window(entity) {
@@ -109,9 +112,13 @@ fn set_window_icon(windows: NonSend<WinitWindows>, q_primary: Query<Entity, With
     warn!("Coun't find icon, it should be here 'assets\\icon.png' but wasn't");
 }
 
+#[cfg(not(target_os = "windows"))]
+fn set_window_icon() {}
+
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum AppState {
     #[default]
+    Loading,
     MainMenu,
     Game,
     GameOver,

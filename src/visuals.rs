@@ -6,12 +6,12 @@ use crate::{
     scale::{Scale, TextScale},
     shapes::{generate_cross_path, generate_nought_path},
     Board, BOTTOM_TEXT_SIZE, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
-    GRID_LINE_THICKNESS, NOUGHT_COLOR, TOP_TEXT_SIZE,
+    GRID_LINE_THICKNESS, NOUGHT_COLOR, TOP_TEXT_SIZE, loading::FontAssets,
 };
 
 const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.20);
 
-pub fn spawn_board(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_board(mut commands: Commands, font_assets: Res<FontAssets>) {
     // Grid lines
     for x in 0..2 {
         for y in -4..4 {
@@ -57,14 +57,14 @@ pub fn spawn_board(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // Top text
     let top_text_style = TextStyle {
-        font: asset_server.load("fonts/Poppins-SemiBold.ttf"),
+        font: font_assets.poppins_semi_bold.clone(),
         font_size: TOP_TEXT_SIZE,
         color: Color::rgb(0.1, 0.1, 0.1),
     };
 
     // Bottom text
     let bottom_text_style = TextStyle {
-        font: asset_server.load("fonts/Poppins-Medium.ttf"),
+        font: font_assets.poppins_medium.clone(),
         font_size: BOTTOM_TEXT_SIZE,
         color: Color::rgb(0.1, 0.1, 0.1),
     };
