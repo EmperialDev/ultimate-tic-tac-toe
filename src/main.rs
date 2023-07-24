@@ -8,14 +8,17 @@ pub mod shapes;
 pub mod visuals;
 pub mod loading;
 
-use bevy::{prelude::*, window::PrimaryWindow, winit::WinitWindows};
+use bevy::prelude::*;
+#[cfg(target_os = "windows")]
+use bevy::{window::PrimaryWindow, winit::WinitWindows};
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_iced::IcedPlugin;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use iced_menu::IcedMenuPlugin;
 use loading::LoadingPlugin;
 use player_input::main_mouse_system;
-use scale::{resize, ScaleFactor};
+use scale::{window_resize, ScaleFactor};
 use visuals::{
     despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
     GridCover, Symbol,
@@ -51,10 +54,11 @@ fn main() {
             primary_window: Some(Window {
                 title: String::from("Ultimate Tic Tac Toe"),
                 canvas: Some("#bevy".to_owned()),
+                fit_canvas_to_parent: true,
                 ..Default::default()
             }),
             ..Default::default()
-        }))
+        }).build().add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin))
         .add_plugin(ShapePlugin)
         .add_plugin(IcedPlugin)
         .add_state::<AppState>()
@@ -66,8 +70,8 @@ fn main() {
         .add_startup_system(set_window_icon)
         .add_startup_system(setup)
         // Systems
+        .add_system(window_resize)
         .add_systems((spawn_board, spawn_grid_cover).in_schedule(OnExit(AppState::Loading)))
-        .add_system(resize)
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
         .add_systems((main_mouse_system, update_bottom_text).in_set(OnUpdate(AppState::Game)))
         .run()

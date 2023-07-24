@@ -3,7 +3,7 @@ use bevy_prototype_lyon::prelude::*;
 
 use crate::{
     board::{CrossOrNought, GridState},
-    scale::{Scale, TextScale},
+    scale::{Scale, TextScale, ScaleFactor},
     shapes::{generate_cross_path, generate_nought_path},
     Board, BOTTOM_TEXT_SIZE, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
     GRID_LINE_THICKNESS, NOUGHT_COLOR, TOP_TEXT_SIZE, loading::FontAssets,
@@ -11,7 +11,9 @@ use crate::{
 
 const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.20);
 
-pub fn spawn_board(mut commands: Commands, font_assets: Res<FontAssets>) {
+pub fn spawn_board(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>, font_assets: Res<FontAssets>) {
+    let scale_fac = q_scale_factor.single().0;
+
     // Grid lines
     for x in 0..2 {
         for y in -4..4 {
@@ -22,14 +24,14 @@ pub fn spawn_board(mut commands: Commands, font_assets: Res<FontAssets>) {
             let scale = 9.0 * (CELL_SIZE + 2.0 * CELL_PADDING) + 8.0 * (GRID_LINE_THICKNESS);
 
             let translation = Vec3 {
-                x: if x == 1 { pos } else { 0.0 },
-                y: if x == 0 { pos } else { 0.0 },
+                x: if x == 1 { pos * scale_fac } else { 0.0 },
+                y: if x == 0 { pos * scale_fac } else { 0.0 },
                 z: if (y + 5) % 3 == 0 { 1.0 } else { 0.0 },
             };
 
             let scale = Vec3 {
-                x: if x == 1 { GRID_LINE_THICKNESS } else { scale },
-                y: if x == 0 { GRID_LINE_THICKNESS } else { scale },
+                x: if x == 1 { GRID_LINE_THICKNESS * scale_fac } else { scale * scale_fac },
+                y: if x == 0 { GRID_LINE_THICKNESS * scale_fac } else { scale * scale_fac },
                 z: 1.0,
             };
 
@@ -58,14 +60,14 @@ pub fn spawn_board(mut commands: Commands, font_assets: Res<FontAssets>) {
     // Top text
     let top_text_style = TextStyle {
         font: font_assets.poppins_semi_bold.clone(),
-        font_size: TOP_TEXT_SIZE,
+        font_size: TOP_TEXT_SIZE * scale_fac,
         color: Color::rgb(0.1, 0.1, 0.1),
     };
 
     // Bottom text
     let bottom_text_style = TextStyle {
         font: font_assets.poppins_medium.clone(),
-        font_size: BOTTOM_TEXT_SIZE,
+        font_size: BOTTOM_TEXT_SIZE * scale_fac,
         color: Color::rgb(0.1, 0.1, 0.1),
     };
 
@@ -76,7 +78,7 @@ pub fn spawn_board(mut commands: Commands, font_assets: Res<FontAssets>) {
             transform: Transform {
                 translation: Vec3::new(
                     0.0,
-                    5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
+                    5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac,
                     0.0,
                 ),
                 ..Default::default()
@@ -93,8 +95,8 @@ pub fn spawn_board(mut commands: Commands, font_assets: Res<FontAssets>) {
             transform: Transform {
                 translation: Vec3::new(
                     0.0,
-                    -5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
-                        + GRID_LINE_THICKNESS,
+                    (-5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) 
+                        + GRID_LINE_THICKNESS) * scale_fac,
                     0.0,
                 ),
                 ..Default::default()
@@ -149,19 +151,21 @@ pub fn update_bottom_text(
     }
 }
 
-pub fn spawn_grid_cover(mut commands: Commands) {
+pub fn spawn_grid_cover(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>, ) {
+    let scale_fac = q_scale_factor.single().0;
+
     // Invisible grid covers
     for x in -1i32..2i32 {
         for y in -1i32..2i32 {
             let translation = Vec3::new(
-                (x * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
-                (y * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS),
+                (x * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac,
+                (y * 3) as f32 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) * scale_fac,
                 10.0,
             );
 
             let scale = Vec3::new(
-                3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS,
-                3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS,
+                (3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS) * scale_fac,
+                (3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS) * scale_fac,
                 1.0,
             );
 

@@ -9,6 +9,7 @@ edition = "2021"
 bevy = "0.10.1"
 bevy_prototype_lyon = "0.8.0"
 bevy_asset_loader = "0.16"
+bevy_embedded_assets = "0.7"
 bevy_iced = { git = "https://github.com/nikolajevs86/bevy_iced", rev = "f081111" }
 iced = {version = "0.9.0", features = ["canvas"]}
 winit = { version = "0.28.6", default-features = false }

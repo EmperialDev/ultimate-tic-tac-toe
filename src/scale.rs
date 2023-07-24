@@ -3,7 +3,7 @@ use bevy_iced::IcedSettings;
 
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
 
-pub fn resize(
+pub fn window_resize(
     mut last_scale_fac: Local<Option<f32>>,
     mut resize_event: EventReader<WindowResized>,
     q_primary: Query<&Window, With<PrimaryWindow>>,
@@ -23,7 +23,7 @@ pub fn resize(
         let scale_num_x =
             9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 2.5 * TOP_TEXT_SIZE;
         let scale_num_y =
-            9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 4.0 * TOP_TEXT_SIZE;
+            9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 2.0 * TOP_TEXT_SIZE;
 
         let scale_x = event.height / scale_num_x;
         let scale_y = event.width / scale_num_y;
@@ -62,11 +62,5 @@ pub struct Scale;
 #[derive(Component)]
 pub struct TextScale;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct ScaleFactor(pub f32);
-
-impl Default for ScaleFactor {
-    fn default() -> Self {
-        Self(1.0)
-    }
-}
