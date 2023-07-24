@@ -12,8 +12,12 @@ bevy_asset_loader = "0.16"
 bevy_embedded_assets = "0.7"
 bevy_iced = { git = "https://github.com/nikolajevs86/bevy_iced", rev = "f081111" }
 iced = {version = "0.9.0", features = ["canvas"]}
+
+[target.'cfg(target_os = "windows")'.dependencies]
 winit = { version = "0.28.6", default-features = false }
 image = { version = "0.24.6", default-features = false }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1"
 
 [build-dependencies]
