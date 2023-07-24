@@ -62,5 +62,11 @@ pub struct Scale;
 #[derive(Component)]
 pub struct TextScale;
 
-#[derive(Component, Default)]
+#[derive(Component)]
 pub struct ScaleFactor(pub f32);
+
+impl Default for ScaleFactor {
+    fn default() -> Self {
+        Self(1.0)
+    }
+}

@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 bevy = "0.10.1"
 bevy_prototype_lyon = "0.8.0"
-bevy_iced = "0.3.0"
+bevy_iced = { git = "https://github.com/nikolajevs86/bevy_iced", rev = "f081111" }
 iced = {version = "0.9.0", features = ["canvas"]}
 winit = { version = "0.28.6", default-features = false }
 image = { version = "0.24.6", default-features = false }

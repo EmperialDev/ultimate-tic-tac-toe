@@ -540,8 +540,7 @@ dependencies = [
 [[package]]
 name = "bevy_iced"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b258ba9b6a49edb4cac2c10cd384d75156a88bd9c57885e4e72b1d9c32a6078a"
+source = "git+https://github.com/nikolajevs86/bevy_iced?rev=f081111#f08111185da90572615a4bb06f67f42192610c1f"
 dependencies = [
  "bevy_app",
  "bevy_derive",

@@ -50,7 +50,7 @@ pub fn main_mouse_system(
                     }
                 }
             } else {
-                println!("Cursor out of window")
+                warn!("Cursor out of window")
             }
         } else {
             error!("Coun't get window")
