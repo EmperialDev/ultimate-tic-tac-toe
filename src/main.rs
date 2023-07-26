@@ -15,7 +15,7 @@ use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use iced_menu::IcedMenuPlugin;
 use loading::LoadingPlugin;
-use player_input::main_mouse_system;
+use player_input::{main_mouse_system, touch_input};
 use scale::{window_resize, ScaleFactor};
 use visuals::{
     despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
@@ -73,7 +73,7 @@ fn main() {
         .add_system(window_resize)
         .add_systems((spawn_board, spawn_grid_cover).in_schedule(OnExit(AppState::Loading)))
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
-        .add_systems((main_mouse_system, update_bottom_text).in_set(OnUpdate(AppState::Game)))
+        .add_systems((main_mouse_system, touch_input, update_bottom_text).in_set(OnUpdate(AppState::Game)))
         .run()
 }
 
