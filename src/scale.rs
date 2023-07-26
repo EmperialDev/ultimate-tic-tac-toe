@@ -1,4 +1,7 @@
-use bevy::{prelude::*, window::{WindowResized, PrimaryWindow}};
+use bevy::{
+    prelude::*,
+    window::{PrimaryWindow, WindowResized},
+};
 use bevy_iced::IcedSettings;
 
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
@@ -13,7 +16,6 @@ pub fn window_resize(
     mut iced_settings: ResMut<IcedSettings>,
 ) {
     for event in resize_event.iter() {
-        
         let os_scale = if let Ok(primary) = q_primary.get_single() {
             primary.scale_factor()
         } else {

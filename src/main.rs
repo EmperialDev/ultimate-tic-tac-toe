@@ -2,13 +2,15 @@
 
 pub mod board;
 pub mod iced_menu;
+pub mod loading;
 pub mod player_input;
 pub mod scale;
 pub mod shapes;
 pub mod visuals;
-pub mod loading;
 
 use bevy::prelude::*;
+#[cfg(target_os = "windows")]
+use bevy::{window::PrimaryWindow, winit::WinitWindows};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_iced::IcedPlugin;
 use bevy_prototype_lyon::prelude::*;
@@ -23,8 +25,6 @@ use visuals::{
 };
 #[cfg(target_os = "windows")]
 use winit::window::Icon;
-#[cfg(target_os = "windows")]
-use bevy::{window::PrimaryWindow, winit::WinitWindows};
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
@@ -50,15 +50,20 @@ fn main() {
     App::new()
         // Bevy Plugins
         .insert_resource(Msaa::Sample4)
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: String::from("Ultimate Tic Tac Toe"),
-                canvas: Some("#bevy".to_owned()),
-                fit_canvas_to_parent: true,
-                ..Default::default()
-            }),
-            ..Default::default()
-        }).build().add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: String::from("Ultimate Tic Tac Toe"),
+                        canvas: Some("#bevy".to_owned()),
+                        fit_canvas_to_parent: true,
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                })
+                .build()
+                .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin),
+        )
         .add_plugin(ShapePlugin)
         .add_plugin(IcedPlugin)
         .add_state::<AppState>()
@@ -73,7 +78,9 @@ fn main() {
         .add_system(window_resize)
         .add_systems((spawn_board, spawn_grid_cover).in_schedule(OnExit(AppState::Loading)))
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
-        .add_systems((main_mouse_system, touch_input, update_bottom_text).in_set(OnUpdate(AppState::Game)))
+        .add_systems(
+            (main_mouse_system, touch_input, update_bottom_text).in_set(OnUpdate(AppState::Game)),
+        )
         .run()
 }
 

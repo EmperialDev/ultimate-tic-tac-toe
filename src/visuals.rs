@@ -3,15 +3,20 @@ use bevy_prototype_lyon::prelude::*;
 
 use crate::{
     board::{CrossOrNought, GridState},
-    scale::{Scale, TextScale, ScaleFactor},
+    loading::FontAssets,
+    scale::{Scale, ScaleFactor, TextScale},
     shapes::{generate_cross_path, generate_nought_path},
     Board, BOTTOM_TEXT_SIZE, CELL_PADDING, CELL_SIZE, CROSS_AND_NOUGHT_LINE_THICKNESS, CROSS_COLOR,
-    GRID_LINE_THICKNESS, NOUGHT_COLOR, TOP_TEXT_SIZE, loading::FontAssets,
+    GRID_LINE_THICKNESS, NOUGHT_COLOR, TOP_TEXT_SIZE,
 };
 
 const GRID_COVER_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.20);
 
-pub fn spawn_board(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>, font_assets: Res<FontAssets>) {
+pub fn spawn_board(
+    mut commands: Commands,
+    q_scale_factor: Query<&ScaleFactor>,
+    font_assets: Res<FontAssets>,
+) {
     let scale_fac = q_scale_factor.single().0;
 
     // Grid lines
@@ -30,8 +35,16 @@ pub fn spawn_board(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>, 
             };
 
             let scale = Vec3 {
-                x: if x == 1 { GRID_LINE_THICKNESS * scale_fac } else { scale * scale_fac },
-                y: if x == 0 { GRID_LINE_THICKNESS * scale_fac } else { scale * scale_fac },
+                x: if x == 1 {
+                    GRID_LINE_THICKNESS * scale_fac
+                } else {
+                    scale * scale_fac
+                },
+                y: if x == 0 {
+                    GRID_LINE_THICKNESS * scale_fac
+                } else {
+                    scale * scale_fac
+                },
                 z: 1.0,
             };
 
@@ -95,8 +108,9 @@ pub fn spawn_board(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>, 
             transform: Transform {
                 translation: Vec3::new(
                     0.0,
-                    (-5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) 
-                        + GRID_LINE_THICKNESS) * scale_fac,
+                    (-5.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
+                        + GRID_LINE_THICKNESS)
+                        * scale_fac,
                     0.0,
                 ),
                 ..Default::default()
@@ -151,7 +165,7 @@ pub fn update_bottom_text(
     }
 }
 
-pub fn spawn_grid_cover(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>, ) {
+pub fn spawn_grid_cover(mut commands: Commands, q_scale_factor: Query<&ScaleFactor>) {
     let scale_fac = q_scale_factor.single().0;
 
     // Invisible grid covers
@@ -164,8 +178,12 @@ pub fn spawn_grid_cover(mut commands: Commands, q_scale_factor: Query<&ScaleFact
             );
 
             let scale = Vec3::new(
-                (3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS) * scale_fac,
-                (3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) - GRID_LINE_THICKNESS) * scale_fac,
+                (3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
+                    - GRID_LINE_THICKNESS)
+                    * scale_fac,
+                (3.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS)
+                    - GRID_LINE_THICKNESS)
+                    * scale_fac,
                 1.0,
             );
 

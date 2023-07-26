@@ -10,7 +10,7 @@ impl Plugin for LoadingPlugin {
         app.add_loading_state(
             LoadingState::new(AppState::Loading).continue_to_state(AppState::MainMenu),
         )
-        .add_collection_to_loading_state::<_,  FontAssets>(AppState::Loading);
+        .add_collection_to_loading_state::<_, FontAssets>(AppState::Loading);
     }
 }
 
@@ -22,5 +22,4 @@ pub struct FontAssets {
     pub poppins_medium: Handle<Font>,
     #[asset(path = "fonts/Poppins-SemiBold.ttf")]
     pub poppins_semi_bold: Handle<Font>,
-
 }
