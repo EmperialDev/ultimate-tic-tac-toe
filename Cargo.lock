@@ -572,12 +572,13 @@ dependencies = [
 [[package]]
 name = "bevy_iced"
 version = "0.3.0"
-source = "git+https://github.com/nikolajevs86/bevy_iced?rev=f081111#f08111185da90572615a4bb06f67f42192610c1f"
+source = "git+https://github.com/EmperialDev/bevy_iced?rev=db044f0#db044f09514622fc10519856d2d438913250be2c"
 dependencies = [
  "bevy_app",
  "bevy_derive",
  "bevy_ecs",
  "bevy_input",
+ "bevy_math",
  "bevy_render",
  "bevy_utils",
  "bevy_window",
