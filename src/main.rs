@@ -9,8 +9,6 @@ pub mod visuals;
 pub mod loading;
 
 use bevy::prelude::*;
-#[cfg(target_os = "windows")]
-use bevy::{window::PrimaryWindow, winit::WinitWindows};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_iced::IcedPlugin;
 use bevy_prototype_lyon::prelude::*;
@@ -23,8 +21,10 @@ use visuals::{
     despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
     GridCover, Symbol,
 };
-#[allow(unused_imports)]
+#[cfg(target_os = "windows")]
 use winit::window::Icon;
+#[cfg(target_os = "windows")]
+use bevy::{window::PrimaryWindow, winit::WinitWindows};
 
 // The size of each cell
 const CELL_SIZE: f32 = 60.0;
