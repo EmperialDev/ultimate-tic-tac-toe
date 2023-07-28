@@ -1,9 +1,12 @@
-use bevy::{prelude::*, window::{WindowResized, PrimaryWindow}};
+use bevy::{
+    prelude::*,
+    window::{PrimaryWindow, WindowResized},
+};
 use bevy_iced::IcedSettings;
 
 use crate::{CELL_PADDING, CELL_SIZE, GRID_LINE_THICKNESS, TOP_TEXT_SIZE};
 
-pub fn resize(
+pub fn window_resize(
     mut last_scale_fac: Local<Option<f32>>,
     mut resize_event: EventReader<WindowResized>,
     q_primary: Query<&Window, With<PrimaryWindow>>,
@@ -13,7 +16,6 @@ pub fn resize(
     mut iced_settings: ResMut<IcedSettings>,
 ) {
     for event in resize_event.iter() {
-        
         let os_scale = if let Ok(primary) = q_primary.get_single() {
             primary.scale_factor()
         } else {
@@ -23,7 +25,7 @@ pub fn resize(
         let scale_num_x =
             9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 2.5 * TOP_TEXT_SIZE;
         let scale_num_y =
-            9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 4.0 * TOP_TEXT_SIZE;
+            9.0 * (CELL_SIZE + 2.0 * CELL_PADDING + GRID_LINE_THICKNESS) + 2.0 * TOP_TEXT_SIZE;
 
         let scale_x = event.height / scale_num_x;
         let scale_y = event.width / scale_num_y;

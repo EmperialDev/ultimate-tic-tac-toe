@@ -2,22 +2,28 @@
 
 pub mod board;
 pub mod iced_menu;
+pub mod loading;
 pub mod player_input;
 pub mod scale;
 pub mod shapes;
 pub mod visuals;
 
-use bevy::{prelude::*, window::PrimaryWindow, winit::WinitWindows};
+use bevy::prelude::*;
+#[cfg(target_os = "windows")]
+use bevy::{window::PrimaryWindow, winit::WinitWindows};
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_iced::IcedPlugin;
 use bevy_prototype_lyon::prelude::*;
 use board::Board;
 use iced_menu::IcedMenuPlugin;
-use player_input::main_mouse_system;
-use scale::{resize, ScaleFactor};
+use loading::LoadingPlugin;
+use player_input::{main_mouse_system, touch_input};
+use scale::{window_resize, ScaleFactor};
 use visuals::{
     despawn_symbols, reset_grid_cover, spawn_board, spawn_grid_cover, update_bottom_text,
     GridCover, Symbol,
 };
+#[cfg(target_os = "windows")]
 use winit::window::Icon;
 
 // The size of each cell
@@ -38,31 +44,43 @@ const NOUGHT_COLOR: Color = Color::rgb(0.85, 0.3, 0.3);
 const CROSS_AND_NOUGHT_LINE_THICKNESS: f32 = 10.0;
 
 fn main() {
+    #[cfg(target_arch = "wasm32")]
+    console_error_panic_hook::set_once();
+
     App::new()
         // Bevy Plugins
         .insert_resource(Msaa::Sample4)
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: String::from("Ultimate Tic Tac Toe"),
-                ..Default::default()
-            }),
-            ..Default::default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: String::from("Ultimate Tic Tac Toe"),
+                        canvas: Some("#bevy".to_owned()),
+                        fit_canvas_to_parent: true,
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                })
+                .build()
+                .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin),
+        )
         .add_plugin(ShapePlugin)
         .add_plugin(IcedPlugin)
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::rgb(0.9, 0.9, 0.9)))
         // My Plugins
+        .add_plugin(LoadingPlugin)
         .add_plugin(IcedMenuPlugin)
         // Startup Systems
         .add_startup_system(set_window_icon)
         .add_startup_system(setup)
-        .add_startup_system(spawn_board)
-        .add_startup_system(spawn_grid_cover)
         // Systems
-        .add_system(resize)
+        .add_system(window_resize)
+        .add_systems((spawn_board, spawn_grid_cover).in_schedule(OnExit(AppState::Loading)))
         .add_system(reset_board.in_schedule(OnEnter(AppState::Game)))
-        .add_systems((main_mouse_system, update_bottom_text).in_set(OnUpdate(AppState::Game)))
+        .add_systems(
+            (main_mouse_system, touch_input, update_bottom_text).in_set(OnUpdate(AppState::Game)),
+        )
         .run()
 }
 
@@ -84,6 +102,7 @@ fn reset_board(
     reset_grid_cover(q_grid_covers);
 }
 
+#[cfg(target_os = "windows")]
 fn set_window_icon(windows: NonSend<WinitWindows>, q_primary: Query<Entity, With<PrimaryWindow>>) {
     if let Ok(entity) = q_primary.get_single() {
         if let Some(primary) = windows.get_window(entity) {
@@ -104,9 +123,13 @@ fn set_window_icon(windows: NonSend<WinitWindows>, q_primary: Query<Entity, With
     warn!("Coun't find icon, it should be here 'assets\\icon.png' but wasn't");
 }
 
+#[cfg(not(target_os = "windows"))]
+fn set_window_icon() {}
+
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum AppState {
     #[default]
+    Loading,
     MainMenu,
     Game,
     GameOver,

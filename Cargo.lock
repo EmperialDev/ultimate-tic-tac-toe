@@ -359,6 +359,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_asset_loader"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a34f7b56c1b6efe9f5334291b87dd2e12c1d9392fc7750bb1466e6bef41cd885"
+dependencies = [
+ "anyhow",
+ "bevy",
+ "bevy_asset_loader_derive",
+]
+
+[[package]]
+name = "bevy_asset_loader_derive"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3a34de0c5bd899f365a969a1f1420d5562ee2dee653431651ee7d4755493fa4"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "bevy_audio"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -471,6 +493,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_embedded_assets"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a1d4ecf67c553196cfdef560cf0748f1f699db5a86ed2aa211c958e2a379451"
+dependencies = [
+ "bevy",
+ "cargo-emit",
+]
+
+[[package]]
 name = "bevy_encase_derive"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -540,13 +572,13 @@ dependencies = [
 [[package]]
 name = "bevy_iced"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b258ba9b6a49edb4cac2c10cd384d75156a88bd9c57885e4e72b1d9c32a6078a"
+source = "git+https://github.com/EmperialDev/bevy_iced?rev=db044f0#db044f09514622fc10519856d2d438913250be2c"
 dependencies = [
  "bevy_app",
  "bevy_derive",
  "bevy_ecs",
  "bevy_input",
+ "bevy_math",
  "bevy_render",
  "bevy_utils",
  "bevy_window",
@@ -1111,6 +1143,12 @@ dependencies = [
  "thiserror",
  "vec_map",
 ]
+
+[[package]]
+name = "cargo-emit"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1582e1c9e755dd6ad6b224dcffb135d199399a4568d454bd89fe515ca8425695"
 
 [[package]]
 name = "cc"
@@ -4152,8 +4190,11 @@ name = "ultimate-tic-tac-toe"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_asset_loader",
+ "bevy_embedded_assets",
  "bevy_iced",
  "bevy_prototype_lyon",
+ "console_error_panic_hook",
  "embed-resource",
  "iced",
  "image",
